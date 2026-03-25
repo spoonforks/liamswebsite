@@ -306,11 +306,11 @@ function createFrame(config) {
   } else if (config.wall === "back") {
     x = config.offset;
     z = room.depth / 2 - wallInset;
-    ry = 180;
+    ry = 0;
   } else {
     x = config.offset;
     z = -room.depth / 2 + wallInset;
-    ry = 0;
+    ry = 180;
   }
 
   frame.style.transform = `${composeTransform({ x, y, z, ry })} translateZ(22px)`;
