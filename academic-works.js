@@ -12,15 +12,15 @@ const room = {
 };
 
 const camera = {
-  baseZ: -1700,
-  pitch: -5,
+  baseZ: -1180,
+  pitch: 0,
 };
 
 const player = {
-  x: -220,
+  x: -40,
   y: room.height / 2 - 152,
-  z: -room.depth / 2 + 118,
-  yaw: 0.52,
+  z: -room.depth / 2 + 230,
+  yaw: 0.26,
   radius: 44,
   walkSpeed: 340,
   turnSpeed: 1.9,
