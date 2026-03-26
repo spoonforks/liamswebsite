@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Gallery</title>
+  <link rel="stylesheet" href="academic-gallery.css">
+</head>
+<body>
+  <main class="gallery-app">
+    <canvas
+      id="gallery-canvas"
+      class="gallery-canvas"
+      aria-label="First-person view inside the academic gallery"
+    ></canvas>
+
+    <div class="gallery-overlay">
+      <section class="gallery-panel gallery-intro" aria-label="Gallery controls">
+        <p class="gallery-kicker">Academic Gallery</p>
+        <h1>Movement Prototype</h1>
+        <p class="gallery-copy">
+          You are standing inside a museum room interior from a first-person viewpoint
+          at 2 meters tall. Click to lock the cursor, use the mouse to look around,
+          and move with the arrow keys through the gallery.
+        </p>
+        <div class="gallery-actions">
+          <button id="lock-button" class="gallery-button" type="button">Enter Gallery</button>
+          <a class="gallery-link" href="index.html">Back Home</a>
+        </div>
+      </section>
+
+      <section class="gallery-panel gallery-status" aria-label="Player state">
+        <p id="movement-status">Position 0.0m, 2.0m, 0.0m</p>
+        <p id="lock-status">Click Enter Gallery to capture the mouse.</p>
+      </section>
+    </div>
+
+    <div class="gallery-crosshair" aria-hidden="true"></div>
+  </main>
+
+  <script src="academic-gallery.js"></script>
+</body>
+</html>
