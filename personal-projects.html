@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Projects</title>
+  <link rel="stylesheet" href="personal-projects.css?v=20260327a">
+</head>
+<body>
+  <main class="projects-app">
+    <a class="home-link" href="index.html">Back Home</a>
+
+    <h1 class="sr-only">Personal Projects</h1>
+
+    <section class="projects-stage" aria-label="Elevator project selector">
+      <aside class="control-panel" aria-label="Elevator controls">
+        <button class="floor-button" type="button" data-floor="3" aria-pressed="false" aria-controls="floor-3-panel">3</button>
+        <button class="floor-button" type="button" data-floor="2" aria-pressed="false" aria-controls="floor-2-panel">2</button>
+        <button class="floor-button" type="button" data-floor="1" aria-pressed="false" aria-controls="floor-1-panel">1</button>
+      </aside>
+
+      <section class="elevator-shell" id="elevator-shell" aria-live="polite">
+        <div class="elevator-top-bar">
+          <div class="elevator-indicator" aria-hidden="true">
+            <span id="indicator-value">--</span>
+          </div>
+        </div>
+
+        <div class="elevator-frame">
+          <div class="cabin-backdrop">
+            <div class="cabin-content">
+              <section class="floor-panel-content" id="floor-1-panel" data-floor="1" hidden>
+                <div class="placeholder-sheet">
+                  <span class="sheet-label">Floor 1</span>
+                  <div class="sheet-frame">
+                    <p>Project content placeholder</p>
+                  </div>
+                </div>
+              </section>
+
+              <section class="floor-panel-content" id="floor-2-panel" data-floor="2" hidden>
+                <div class="placeholder-sheet">
+                  <span class="sheet-label">Floor 2</span>
+                  <div class="sheet-frame">
+                    <p>Project content placeholder</p>
+                  </div>
+                </div>
+              </section>
+
+              <section class="floor-panel-content" id="floor-3-panel" data-floor="3" hidden>
+                <div class="placeholder-sheet">
+                  <span class="sheet-label">Floor 3</span>
+                  <div class="sheet-frame">
+                    <p>Project content placeholder</p>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <div class="elevator-door elevator-door-left" aria-hidden="true"></div>
+          <div class="elevator-door elevator-door-right" aria-hidden="true"></div>
+        </div>
+      </section>
+    </section>
+
+    <p class="stage-status" id="elevator-status">Select a floor to open the elevator.</p>
+  </main>
+
+  <script src="personal-projects.js?v=20260327a"></script>
+</body>
+</html>
