@@ -31,11 +31,19 @@ const state = {
   lastFrame: performance.now(),
   width: window.innerWidth,
   height: window.innerHeight,
-  focalLength: 1
+  focalLength: 1,
+  dpr: 1
 };
 
 const frameImage = new Image();
 frameImage.src = "goldframe.png";
+const benchModelData = window.BENCH_MODEL_DATA || null;
+const frameOpening = {
+  left: 88 / 911,
+  right: 819 / 911,
+  top: 83 / 514,
+  bottom: 430 / 514
+};
 
 const scene = buildScene();
 const faces = scene.faces;
@@ -54,97 +62,45 @@ function buildScene() {
 
   const artworks = [
     {
+      id: 1,
       wall: "north",
       center: 0,
-      width: 5.6,
-      height: 3.5,
-      palette: {
-        frameShadow: "#5d452f",
-        frameLight: "#ae865f",
-        mat: "#f1ede5",
-        base: "#627768",
-        accent: "#435148",
-        highlight: "#96a691"
+      width: 9.6,
+      height: 6.4,
+      content: {
+        type: "text",
+        text: "Thesis"
       }
     },
     {
-      wall: "west",
-      center: -4.9,
-      width: 2.5,
-      height: 1.85,
-      palette: {
-        frameShadow: "#543f2b",
-        frameLight: "#9f7a55",
-        mat: "#efe9de",
-        base: "#6d7d87",
-        accent: "#42525d",
-        highlight: "#a0b1ba"
-      }
-    },
-    {
-      wall: "west",
-      center: 4.6,
-      width: 2.35,
-      height: 1.75,
-      palette: {
-        frameShadow: "#59422d",
-        frameLight: "#a98359",
-        mat: "#f2ede4",
-        base: "#746c5d",
-        accent: "#4f473c",
-        highlight: "#b1a48f"
-      }
-    },
-    {
+      id: 2,
       wall: "east",
-      center: 0.2,
-      width: 2.65,
-      height: 1.95,
-      palette: {
-        frameShadow: "#56402f",
-        frameLight: "#a07e59",
-        mat: "#f0ebe2",
-        base: "#7f6f6f",
-        accent: "#584c4c",
-        highlight: "#bcadad"
-      }
+      center: 0,
+      width: 9.6,
+      height: 6.4
     },
     {
+      id: 3,
       wall: "south",
-      center: -4.25,
-      width: 1.55,
-      height: 1.15,
-      palette: {
-        frameShadow: "#563f2d",
-        frameLight: "#a07f60",
-        mat: "#f1ece3",
-        base: "#61706c",
-        accent: "#45504d",
-        highlight: "#97a49f"
-      }
+      center: 0,
+      width: 9.6,
+      height: 6.4
     },
     {
-      wall: "south",
-      center: 4.25,
-      width: 1.45,
-      height: 1.05,
-      palette: {
-        frameShadow: "#583f2b",
-        frameLight: "#a88661",
-        mat: "#f0ebe4",
-        base: "#7d6e62",
-        accent: "#5a4d44",
-        highlight: "#b3a396"
-      }
+      id: 4,
+      wall: "west",
+      center: 0,
+      width: 9.6,
+      height: 6.4
     }
   ];
 
   for (const artwork of artworks) {
-    artwork.bottom = player.eyeHeight - artwork.height / 2;
+    artwork.bottom = Math.max(0.5, player.eyeHeight - artwork.height / 2);
     addFramedArtwork(builtFaces, builtSeams, builtSprites, artwork);
   }
 
-  addBench(builtFaces, builtSeams, builtObstacles);
+  addBenchModel(builtFaces, builtObstacles);
 
   return {
     faces: builtFaces,
@@ -164,6 +120,27 @@ function addLine(collection, start, end) {
 
 function addSprite(collection, config) {
   collection.push(config);
+}
+
+function createFrameContentTexture(config) {
+  if (!config || config.type !== "text") {
+    return null;
+  }
+
+  const texture = document.createElement("canvas");
+  texture.width = 1400;
+  texture.height = 900;
+  const textureContext = texture.getContext("2d");
+
+  textureContext.fillStyle = "#f5f2eb";
+  textureContext.fillRect(0, 0, texture.width, texture.height);
+  textureContext.fillStyle = "#141414";
+  textureContext.textAlign = "center";
+  textureContext.textBaseline = "middle";
+  textureContext.font = "140px sans-serif";
+  textureContext.fillText(config.text, texture.width / 2, texture.height / 2);
+
+  return texture;
 }
 
 function addBox(collection, config) {
@@ -469,6 +446,39 @@ function getWallQuad(wall, center, bottom, width, height, depth) {
   ];
 }
 
+function interpolatePoint3D(start, end, t) {
+  return {
+    x: start.x + (end.x - start.x) * t,
+    y: start.y + (end.y - start.y) * t,
+    z: start.z + (end.z - start.z) * t
+  };
+}
+
+function getFrameOpeningQuad(outerQuad) {
+  const topLeft = interpolatePoint3D(
+    interpolatePoint3D(outerQuad[0], outerQuad[1], frameOpening.left),
+    interpolatePoint3D(outerQuad[3], outerQuad[2], frameOpening.left),
+    frameOpening.top
+  );
+  const topRight = interpolatePoint3D(
+    interpolatePoint3D(outerQuad[0], outerQuad[1], frameOpening.right),
+    interpolatePoint3D(outerQuad[3], outerQuad[2], frameOpening.right),
+    frameOpening.top
+  );
+  const bottomRight = interpolatePoint3D(
+    interpolatePoint3D(outerQuad[0], outerQuad[1], frameOpening.right),
+    interpolatePoint3D(outerQuad[3], outerQuad[2], frameOpening.right),
+    frameOpening.bottom
+  );
+  const bottomLeft = interpolatePoint3D(
+    interpolatePoint3D(outerQuad[0], outerQuad[1], frameOpening.left),
+    interpolatePoint3D(outerQuad[3], outerQuad[2], frameOpening.left),
+    frameOpening.bottom
+  );
+
+  return [topLeft, topRight, bottomRight, bottomLeft];
+}
+
 function addRoomShell(collection, lineCollection) {
   const hw = room.width / 2;
   const hh = room.height;
@@ -593,145 +603,112 @@ function addArchitecturalTrim(collection, lineCollection) {
   addLine(lineCollection, { x: -hw + 1.2, y: hh - 0.18, z: hd - 1.2 }, { x: -hw + 1.2, y: hh - 0.18, z: -hd + 1.2 });
 }
 
-function addArtworkComposition(collection, wall, center, bottom, width, height, depth, palette) {
-  addWallPanel(collection, wall, center, bottom, width, height, depth, palette.base, "rgba(33, 30, 28, 0.05)");
-  addWallPanel(
-    collection,
-    wall,
-    center,
-    bottom + height * 0.56,
-    width,
-    height * 0.44,
-    depth + 0.0004,
-    palette.highlight,
-    "rgba(33, 30, 28, 0.03)"
-  );
-  addWallPanel(
-    collection,
-    wall,
-    center,
-    bottom,
-    width,
-    height * 0.28,
-    depth + 0.0008,
-    palette.accent,
-    "rgba(33, 30, 28, 0.03)"
-  );
-  addWallPanel(
-    collection,
-    wall,
-    center + width * 0.16,
-    bottom + height * 0.18,
-    width * 0.22,
-    height * 0.48,
-    depth + 0.0012,
-    "rgba(247, 241, 229, 0.22)",
-    "rgba(33, 30, 28, 0.02)"
-  );
-}
-
 function addFramedArtwork(collection, lineCollection, spriteCollection, config) {
   const frameDepth = 0.036;
-  const top = config.bottom + config.height;
-  const artworkWidth = config.width * 0.7;
-  const artworkHeight = config.height * 0.58;
-  const artworkBottom = config.bottom + (config.height - artworkHeight) / 2;
-  addArtworkComposition(
-    collection,
-    config.wall,
-    config.center,
-    artworkBottom,
-    artworkWidth,
-    artworkHeight,
-    frameDepth - 0.01,
-    config.palette
-  );
+  const frameQuad = getWallQuad(config.wall, config.center, config.bottom, config.width, config.height, frameDepth);
+
+  if (config.content) {
+    const contentTexture = createFrameContentTexture(config.content);
+
+    if (contentTexture) {
+      addSprite(spriteCollection, {
+        image: contentTexture,
+        points: getFrameOpeningQuad(frameQuad),
+        depthBias: -2
+      });
+    }
+  }
 
   addSprite(spriteCollection, {
     image: frameImage,
-    points: getWallQuad(config.wall, config.center, config.bottom, config.width, config.height, frameDepth),
+    points: frameQuad,
     depthBias: -3
   });
-
-  addLine(
-    lineCollection,
-    getWallPoint(config.wall, config.center, top + 0.12, 0.01),
-    getWallPoint(config.wall, config.center, Math.min(room.height - 0.42, top + 0.58), 0.01)
-  );
 }
 
-function addBench(collection, lineCollection, obstacleCollection) {
-  const seat = {
-    minX: -1.7,
-    maxX: 1.7,
-    minY: 0.5,
-    maxY: 0.7,
-    minZ: -4.95,
-    maxZ: -3.55
-  };
-  const wood = {
-    top: "#6f4f38",
-    bottom: "#4d3426",
-    north: "#5f4331",
-    south: "#7f5b40",
-    west: "#553b2c",
-    east: "#7b573f"
-  };
-  const metal = {
-    top: "#4f4d49",
-    bottom: "#2f2c29",
-    north: "#353230",
-    south: "#595651",
-    west: "#3a3734",
-    east: "#605c57"
-  };
+function hexToRgb(hex) {
+  const normalized = hex.replace("#", "");
 
-  addBox(collection, { ...seat, colors: wood, stroke: "rgba(38, 26, 18, 0.18)" });
+  return {
+    r: parseInt(normalized.slice(0, 2), 16),
+    g: parseInt(normalized.slice(2, 4), 16),
+    b: parseInt(normalized.slice(4, 6), 16)
+  };
+}
 
-  const legs = [
-    { minX: -1.45, maxX: -1.17, minZ: -4.8, maxZ: -4.52 },
-    { minX: 1.17, maxX: 1.45, minZ: -4.8, maxZ: -4.52 },
-    { minX: -1.45, maxX: -1.17, minZ: -3.98, maxZ: -3.7 },
-    { minX: 1.17, maxX: 1.45, minZ: -3.98, maxZ: -3.7 }
-  ];
+function shadeColor(hex, amount) {
+  const color = hexToRgb(hex);
+  const clampChannel = (value) => Math.max(0, Math.min(255, Math.round(value)));
 
-  for (const leg of legs) {
-    addBox(collection, {
-      minX: leg.minX,
-      maxX: leg.maxX,
-      minY: 0,
-      maxY: 0.5,
-      minZ: leg.minZ,
-      maxZ: leg.maxZ,
-      colors: metal,
-      stroke: "rgba(34, 31, 28, 0.14)"
-    });
+  return `rgb(${clampChannel(color.r * amount)}, ${clampChannel(color.g * amount)}, ${clampChannel(color.b * amount)})`;
+}
+
+function addBenchModel(collection, obstacleCollection) {
+  if (!benchModelData) {
+    return;
   }
 
-  addBox(collection, {
-    minX: -1.22,
-    maxX: 1.22,
-    minY: 0.26,
-    maxY: 0.36,
-    minZ: -4.43,
-    maxZ: -4.07,
-    colors: metal,
-    stroke: "rgba(34, 31, 28, 0.14)"
-  });
+  const scale = 2.2;
+  const position = {
+    x: 0,
+    y: -benchModelData.bounds.min[1] * scale,
+    z: -4.25
+  };
+  const lightDirection = { x: -0.35, y: 0.9, z: -0.25 };
+  const lightLength = Math.hypot(lightDirection.x, lightDirection.y, lightDirection.z);
+  lightDirection.x /= lightLength;
+  lightDirection.y /= lightLength;
+  lightDirection.z /= lightLength;
 
-  addLine(lineCollection, { x: -1.7, y: 0.71, z: -4.95 }, { x: 1.7, y: 0.71, z: -4.95 });
-  addLine(lineCollection, { x: -1.7, y: 0.71, z: -3.55 }, { x: 1.7, y: 0.71, z: -3.55 });
+  for (const triangle of benchModelData.triangles) {
+    const a = {
+      x: triangle[0] * scale + position.x,
+      y: -triangle[1] * scale + position.y,
+      z: triangle[2] * scale + position.z
+    };
+    const b = {
+      x: triangle[3] * scale + position.x,
+      y: -triangle[4] * scale + position.y,
+      z: triangle[5] * scale + position.z
+    };
+    const c = {
+      x: triangle[6] * scale + position.x,
+      y: -triangle[7] * scale + position.y,
+      z: triangle[8] * scale + position.z
+    };
+    const ab = { x: b.x - a.x, y: b.y - a.y, z: b.z - a.z };
+    const ac = { x: c.x - a.x, y: c.y - a.y, z: c.z - a.z };
+    const normal = {
+      x: ab.y * ac.z - ab.z * ac.y,
+      y: ab.z * ac.x - ab.x * ac.z,
+      z: ab.x * ac.y - ab.y * ac.x
+    };
+    const normalLength = Math.hypot(normal.x, normal.y, normal.z) || 1;
+    normal.x = -normal.x / normalLength;
+    normal.y = -normal.y / normalLength;
+    normal.z = -normal.z / normalLength;
+    const lightAmount = 0.58 + 0.42 * Math.max(0, normal.x * lightDirection.x + normal.y * lightDirection.y + normal.z * lightDirection.z);
+    const baseColor = benchModelData.palette[triangle[9]];
+
+    addFace(
+      collection,
+      [a, b, c],
+      shadeColor(baseColor, lightAmount),
+      "rgba(0, 0, 0, 0)"
+    );
+  }
 
   obstacleCollection.push({
-    minX: -1.95,
-    maxX: 1.95,
-    minZ: -5.2,
-    maxZ: -3.3
+    minX: position.x + benchModelData.bounds.min[0] * scale - 0.18,
+    maxX: position.x + benchModelData.bounds.max[0] * scale + 0.18,
+    minZ: position.z + benchModelData.bounds.min[2] * scale - 0.18,
+    maxZ: position.z + benchModelData.bounds.max[2] * scale + 0.18
   });
 }
 
 function resizeCanvas() {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  state.dpr = dpr;
   state.width = window.innerWidth;
   state.height = window.innerHeight;
   canvas.width = Math.round(state.width * dpr);
@@ -982,7 +959,11 @@ function interpolatePoint(start, end, t) {
 }
 
 function drawProjectedSprite(sprite) {
-  if (!sprite.image.complete || !sprite.image.naturalWidth) {
+  const source = sprite.image;
+  const sourceWidth = source.naturalWidth || source.videoWidth || source.width;
+  const sourceHeight = source.naturalHeight || source.videoHeight || source.height;
+
+  if ((source.complete === false) || !sourceWidth || !sourceHeight) {
     return;
   }
 
@@ -993,53 +974,67 @@ function drawProjectedSprite(sprite) {
     return;
   }
 
-  const projected = cameraPoints.map(projectPoint);
-  const [topLeft, topRight, bottomRight, bottomLeft] = projected;
+  let [topLeft, topRight, bottomRight, bottomLeft] = cameraPoints.map(projectPoint);
+  const leftEdgeX = (topLeft.x + bottomLeft.x) / 2;
+  const rightEdgeX = (topRight.x + bottomRight.x) / 2;
+
+  if (leftEdgeX > rightEdgeX) {
+    [topLeft, topRight, bottomRight, bottomLeft] = [topRight, topLeft, bottomLeft, bottomRight];
+  }
+
+  const topEdgeY = (topLeft.y + topRight.y) / 2;
+  const bottomEdgeY = (bottomLeft.y + bottomRight.y) / 2;
+
+  if (topEdgeY > bottomEdgeY) {
+    [topLeft, topRight, bottomRight, bottomLeft] = [bottomLeft, bottomRight, topRight, topLeft];
+  }
+
   const strips = Math.max(
-    24,
-    Math.ceil(Math.hypot(topRight.x - topLeft.x, topRight.y - topLeft.y) / 6)
+    64,
+    Math.ceil(Math.max(
+      Math.hypot(topRight.x - topLeft.x, topRight.y - topLeft.y),
+      Math.hypot(bottomRight.x - bottomLeft.x, bottomRight.y - bottomLeft.y)
+    ) / 4)
   );
 
   context.save();
   context.imageSmoothingEnabled = true;
+  context.beginPath();
+  context.moveTo(topLeft.x, topLeft.y);
+  context.lineTo(topRight.x, topRight.y);
+  context.lineTo(bottomRight.x, bottomRight.y);
+  context.lineTo(bottomLeft.x, bottomLeft.y);
+  context.closePath();
+  context.clip();
 
   for (let index = 0; index < strips; index += 1) {
-    const t0 = index / strips;
-    const t1 = (index + 1) / strips;
+    const overlap = 0.35 / strips;
+    const t0 = Math.max(0, index / strips - overlap);
+    const t1 = Math.min(1, (index + 1) / strips + overlap);
     const quadTopLeft = interpolatePoint(topLeft, topRight, t0);
     const quadTopRight = interpolatePoint(topLeft, topRight, t1);
     const quadBottomLeft = interpolatePoint(bottomLeft, bottomRight, t0);
     const quadBottomRight = interpolatePoint(bottomLeft, bottomRight, t1);
 
-    context.save();
-    context.beginPath();
-    context.moveTo(quadTopLeft.x, quadTopLeft.y);
-    context.lineTo(quadTopRight.x, quadTopRight.y);
-    context.lineTo(quadBottomRight.x, quadBottomRight.y);
-    context.lineTo(quadBottomLeft.x, quadBottomLeft.y);
-    context.closePath();
-    context.clip();
-
     context.setTransform(
-      quadTopRight.x - quadTopLeft.x,
-      quadTopRight.y - quadTopLeft.y,
-      quadBottomLeft.x - quadTopLeft.x,
-      quadBottomLeft.y - quadTopLeft.y,
-      quadTopLeft.x,
-      quadTopLeft.y
+      state.dpr * (quadTopRight.x - quadTopLeft.x),
+      state.dpr * (quadTopRight.y - quadTopLeft.y),
+      state.dpr * (quadBottomLeft.x - quadTopLeft.x),
+      state.dpr * (quadBottomLeft.y - quadTopLeft.y),
+      state.dpr * quadTopLeft.x,
+      state.dpr * quadTopLeft.y
     );
     context.drawImage(
-      sprite.image,
-      sprite.image.naturalWidth * t0,
+      source,
+      sourceWidth * t0,
       0,
-      Math.ceil(sprite.image.naturalWidth * (t1 - t0)) + 1,
-      sprite.image.naturalHeight,
+      Math.ceil(sourceWidth * (t1 - t0)) + 1,
+      sourceHeight,
       0,
       0,
       1,
       1
     );
-    context.restore();
   }
 
   context.restore();
