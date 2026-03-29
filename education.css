@@ -1,0 +1,183 @@
+:root {
+  color-scheme: light;
+  --page-bg: #d9d9d9;
+  --outline: #5f5f5f;
+  --card-bg: #666666;
+  --card-text: #f1f1f1;
+  --card-rule: rgba(241, 241, 241, 0.46);
+  --stage-side-gap: 3rem;
+  --stage-top-gap: 7rem;
+  --stage-bottom-gap: 2rem;
+  --stage-max-width: 1080px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--page-bg);
+}
+
+body {
+  font-family: Aptos, "Segoe UI", sans-serif;
+  color: #262626;
+  overflow: hidden;
+}
+
+.education-app {
+  min-height: 100vh;
+  padding: 4.25rem 0.75rem 1rem;
+  display: grid;
+  place-items: center;
+}
+
+.home-link {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 20;
+  padding: 0.65rem 0.95rem;
+  border: 1px solid rgba(102, 102, 102, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.56);
+  color: #303030;
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  backdrop-filter: blur(12px);
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+
+.home-link:hover,
+.home-link:focus-visible {
+  background: rgba(255, 255, 255, 0.74);
+  transform: translateY(-1px);
+}
+
+.education-stage {
+  position: relative;
+  width: min(
+    calc(100vw - var(--stage-side-gap)),
+    calc((100vh - var(--stage-top-gap) - var(--stage-bottom-gap)) * 935 / 548),
+    var(--stage-max-width)
+  );
+  aspect-ratio: 935 / 548;
+  container-type: inline-size;
+}
+
+.stair-outline {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.stair-lines {
+  fill: none;
+  stroke: var(--outline);
+  stroke-width: 2.5;
+  stroke-linecap: butt;
+  stroke-linejoin: round;
+  shape-rendering: geometricPrecision;
+  vector-effect: non-scaling-stroke;
+  animation: outline-fade 700ms ease-out both;
+}
+
+.step-card-svg {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: card-rise 720ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.step-card-top {
+  animation-delay: 350ms;
+}
+
+.step-card-middle {
+  animation-delay: 220ms;
+}
+
+.step-card-bottom {
+  animation-delay: 90ms;
+}
+
+.step-face {
+  fill: var(--card-bg);
+}
+
+.degree-rule-svg {
+  stroke: var(--card-rule);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.degree-title-svg,
+.degree-meta-svg {
+  fill: var(--card-text);
+  text-anchor: middle;
+  font-family: Aptos, "Segoe UI", sans-serif;
+}
+
+.degree-title-svg {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.degree-meta-svg {
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes outline-fade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes card-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stair-outline,
+  .step-card {
+    animation: none;
+  }
+
+  .home-link {
+    transition: none;
+  }
+}
