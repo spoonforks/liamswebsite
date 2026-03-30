@@ -11,10 +11,10 @@ const room = {
 };
 
 const player = {
-  position: { x: 0, y: 2, z: 0 },
+  position: { x: 0, y: 3, z: 0 },
   velocity: { x: 0, z: 0 },
   radius: 0.45,
-  eyeHeight: 2,
+  eyeHeight: 3,
   yaw: Math.PI,
   pitch: 0
 };
@@ -37,6 +37,18 @@ const state = {
 
 const frameImage = new Image();
 frameImage.src = "goldframe.png";
+const thesisFrameImage = new Image();
+thesisFrameImage.src = "Academic Works/Thesis/thesisFrame.png";
+const parametricFrameImage = new Image();
+parametricFrameImage.src = "Academic Works/Parametric/parametric.png";
+const treeBiodiversityFrameImage = new Image();
+treeBiodiversityFrameImage.src = "Academic Works/TreeBiodiversity/treeBiodiversity.png";
+const thesisTitleImage = new Image();
+thesisTitleImage.src = "Academic Works/Thesis/thesisFrame-title.jpg";
+const thesisPipelineImage = new Image();
+thesisPipelineImage.src = "Academic Works/Thesis/thesisFrame-pipeline.png";
+const thesisChartImage = new Image();
+thesisChartImage.src = "Academic Works/Thesis/thesisFrame-chart.png";
 const benchModelData = window.BENCH_MODEL_DATA || null;
 const frameOpening = {
   left: 88 / 911,
@@ -68,8 +80,7 @@ function buildScene() {
       width: 9.6,
       height: 6.4,
       content: {
-        type: "text",
-        text: "Thesis"
+        type: "thesis"
       }
     },
     {
@@ -77,14 +88,20 @@ function buildScene() {
       wall: "east",
       center: 0,
       width: 9.6,
-      height: 6.4
+      height: 6.4,
+      content: {
+        type: "parametric"
+      }
     },
     {
       id: 3,
       wall: "south",
       center: 0,
       width: 9.6,
-      height: 6.4
+      height: 6.4,
+      content: {
+        type: "treeBiodiversity"
+      }
     },
     {
       id: 4,
@@ -123,7 +140,23 @@ function addSprite(collection, config) {
 }
 
 function createFrameContentTexture(config) {
-  if (!config || config.type !== "text") {
+  if (!config) {
+    return null;
+  }
+
+  if (config.type === "thesis") {
+    return thesisFrameImage;
+  }
+
+  if (config.type === "parametric") {
+    return parametricFrameImage;
+  }
+
+  if (config.type === "treeBiodiversity") {
+    return treeBiodiversityFrameImage;
+  }
+
+  if (config.type !== "text") {
     return null;
   }
 
@@ -141,6 +174,394 @@ function createFrameContentTexture(config) {
   textureContext.fillText(config.text, texture.width / 2, texture.height / 2);
 
   return texture;
+}
+
+function createThesisTexture() {
+  const texture = document.createElement("canvas");
+  texture.width = 2200;
+  texture.height = 1100;
+  const textureContext = texture.getContext("2d");
+  const slide = document.createElement("canvas");
+  slide.width = 1920;
+  slide.height = 1080;
+  const slideContext = slide.getContext("2d");
+
+  textureContext.fillStyle = "#ffffff";
+  textureContext.fillRect(0, 0, texture.width, texture.height);
+
+  slideContext.fillStyle = "#ffffff";
+  slideContext.fillRect(0, 0, slide.width, slide.height);
+
+  const renderSlide = () => {
+    slideContext.fillStyle = "#ffffff";
+    slideContext.fillRect(0, 0, slide.width, slide.height);
+
+    if (thesisTitleImage.complete && thesisTitleImage.naturalWidth) {
+      slideContext.drawImage(thesisTitleImage, 84, 44, 1260, 220);
+    } else {
+      drawThesisTitle(slideContext);
+    }
+
+    drawThesisFindings(slideContext);
+
+    if (thesisPipelineImage.complete && thesisPipelineImage.naturalWidth) {
+      slideContext.drawImage(thesisPipelineImage, 1360, 52, 418, 448);
+    } else {
+      drawThesisPipeline(slideContext, 1372, 68, 470, 430);
+    }
+
+    if (thesisChartImage.complete && thesisChartImage.naturalWidth) {
+      slideContext.drawImage(thesisChartImage, 1360, 640, 470, 335);
+    } else {
+      drawThesisBarChart(slideContext, 1342, 642, 520, 300);
+    }
+
+    slideContext.save();
+    slideContext.font = "italic 48px Georgia, serif";
+    slideContext.textAlign = "left";
+    slideContext.textBaseline = "alphabetic";
+    slideContext.fillStyle = "#0e0e0e";
+    slideContext.shadowColor = "rgba(0, 0, 0, 0.16)";
+    slideContext.shadowBlur = 2;
+    slideContext.fillText("*Currently pending conference acceptance*", 150, 1046);
+    slideContext.restore();
+
+    textureContext.fillStyle = "#ffffff";
+    textureContext.fillRect(0, 0, texture.width, texture.height);
+    const insetY = 18;
+    const drawHeight = texture.height - insetY * 2;
+    const drawWidth = (drawHeight * slide.width) / slide.height;
+    const drawX = (texture.width - drawWidth) / 2 + 110;
+    textureContext.drawImage(slide, drawX, insetY, drawWidth, drawHeight);
+  };
+
+  renderSlide();
+
+  for (const image of [thesisTitleImage, thesisPipelineImage, thesisChartImage]) {
+    if (!image.complete) {
+      image.addEventListener("load", renderSlide, { once: true });
+    }
+  }
+
+  return texture;
+}
+
+function drawThesisTitle(textureContext) {
+  const titleLines = [
+    "Source? I Made it Up: How Hallucinations Can",
+    "Be Studied to Reveal Inherent Political Bias in",
+    "LLMs"
+  ];
+
+  textureContext.save();
+  textureContext.fillStyle = "#111111";
+  textureContext.textAlign = "center";
+  textureContext.textBaseline = "middle";
+  textureContext.font = "70px Georgia, serif";
+
+  let y = 92;
+
+  for (const line of titleLines) {
+    textureContext.fillText(line, 760, y);
+    y += 72;
+  }
+
+  textureContext.restore();
+}
+
+function drawThesisFindings(textureContext) {
+  const textCenterX = 760;
+  const groups = [
+    {
+      y: 316,
+      title: "Pipeline combining generation, detection, and classification",
+      bullet: "LLM outputs -> detect hallucinations -> classify bias"
+    },
+    {
+      y: 466,
+      title: "Use of multiple open-source LLMs for comparison",
+      bullet: "Llama, Mistral, DeepSeek evaluated"
+    },
+    {
+      y: 616,
+      title: "Hallucinations vary significantly by model",
+      bullet: "Frequency differs across models"
+    },
+    {
+      y: 766,
+      title: "Hallucinations occur equally across political inputs",
+      bullet: "Similar rates for left vs right"
+    },
+    {
+      y: 886,
+      title: "Hallucinated content shows systematic left-leaning bias",
+      bullet: "Skews left, especially on key topics"
+    }
+  ];
+
+  textureContext.save();
+  textureContext.fillStyle = "#111111";
+  textureContext.textAlign = "center";
+  textureContext.textBaseline = "middle";
+
+  for (const group of groups) {
+    textureContext.font = "45px Aptos, Arial, sans-serif";
+    textureContext.fillText(group.title, textCenterX, group.y);
+    drawCenteredBulletLine(textureContext, group.bullet, textCenterX, group.y + 48, 18, 39);
+  }
+
+  textureContext.restore();
+}
+
+function drawCenteredBulletLine(textureContext, text, centerX, centerY, radius, fontSize) {
+  textureContext.save();
+  textureContext.fillStyle = "#111111";
+  textureContext.font = `${fontSize}px Aptos, Arial, sans-serif`;
+  textureContext.textAlign = "left";
+  textureContext.textBaseline = "middle";
+
+  const textWidth = textureContext.measureText(text).width;
+  const gap = 22;
+  const totalWidth = radius * 2 + gap + textWidth;
+  const startX = centerX - totalWidth / 2;
+  const bulletCenterX = startX + radius;
+
+  textureContext.beginPath();
+  textureContext.arc(bulletCenterX, centerY, radius / 2.5, 0, Math.PI * 2);
+  textureContext.fill();
+  textureContext.fillText(text, startX + radius * 2 + gap, centerY);
+  textureContext.restore();
+}
+
+function drawRoundedRect(textureContext, x, y, width, height, radius, fillStyle, strokeStyle, lineWidth = 2) {
+  textureContext.beginPath();
+  textureContext.moveTo(x + radius, y);
+  textureContext.lineTo(x + width - radius, y);
+  textureContext.quadraticCurveTo(x + width, y, x + width, y + radius);
+  textureContext.lineTo(x + width, y + height - radius);
+  textureContext.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  textureContext.lineTo(x + radius, y + height);
+  textureContext.quadraticCurveTo(x, y + height, x, y + height - radius);
+  textureContext.lineTo(x, y + radius);
+  textureContext.quadraticCurveTo(x, y, x + radius, y);
+  textureContext.closePath();
+
+  textureContext.fillStyle = fillStyle;
+  textureContext.fill();
+
+  if (strokeStyle) {
+    textureContext.strokeStyle = strokeStyle;
+    textureContext.lineWidth = lineWidth;
+    textureContext.stroke();
+  }
+}
+
+function drawPill(textureContext, x, y, width, height, label, fontSize = 19) {
+  drawRoundedRect(textureContext, x, y, width, height, height / 2, "#a9c7e7", "#5e6d7c", 2);
+  textureContext.save();
+  textureContext.fillStyle = "#1b2b39";
+  textureContext.textAlign = "center";
+  textureContext.textBaseline = "middle";
+  textureContext.font = `${fontSize}px Aptos, Arial, sans-serif`;
+  const lines = label.split("\n");
+  const centerY = y + height / 2 - ((lines.length - 1) * fontSize * 0.58) / 2;
+
+  for (let index = 0; index < lines.length; index += 1) {
+    textureContext.fillText(lines[index], x + width / 2, centerY + index * fontSize * 1.16);
+  }
+
+  textureContext.restore();
+}
+
+function drawLink(textureContext, startX, startY, endX, endY) {
+  textureContext.save();
+  textureContext.strokeStyle = "#5b5b5b";
+  textureContext.lineWidth = 2.2;
+  textureContext.beginPath();
+  textureContext.moveTo(startX, startY);
+  textureContext.lineTo(endX, endY);
+  textureContext.stroke();
+  textureContext.restore();
+}
+
+function drawThesisPipeline(textureContext, x, y, width, height) {
+  textureContext.save();
+  textureContext.strokeStyle = "#6b6b6b";
+  textureContext.lineWidth = 2.2;
+
+  drawRoundedRect(textureContext, x + 160, y + 2, 200, 48, 10, "#a9c7e7", "#5e6d7c");
+  drawPill(textureContext, x + 212, y + 61, 96, 36, "Prompting", 17);
+  drawPill(textureContext, x + 198, y + 112, 128, 52, "Llama 3\nQuestion Generation", 17);
+  drawRoundedRect(textureContext, x + 168, y + 182, 188, 44, 8, "#96b6d8", "#5e6d7c");
+
+  drawPill(textureContext, x + 13, y + 116, 92, 40, "DeBERTa", 18);
+  drawRoundedRect(textureContext, x + 8, y + 188, 102, 36, 8, "#a9c7e7", "#5e6d7c");
+  drawPill(textureContext, x + 2, y + 358, 110, 48, "ownBERT", 18);
+
+  drawPill(textureContext, x + 120, y + 250, 80, 34, "Llama 3", 16);
+  drawPill(textureContext, x + 210, y + 250, 80, 34, "Mistral", 16);
+  drawPill(textureContext, x + 300, y + 250, 96, 34, "Deepseek", 16);
+
+  drawRoundedRect(textureContext, x + 108, y + 298, 104, 34, 6, "#a9c7e7", "#5e6d7c");
+  drawRoundedRect(textureContext, x + 198, y + 320, 104, 34, 6, "#a9c7e7", "#5e6d7c");
+  drawRoundedRect(textureContext, x + 304, y + 298, 122, 34, 6, "#a9c7e7", "#5e6d7c");
+
+  drawPill(textureContext, x + 165, y + 370, 100, 42, "ANAH-v2", 18);
+  drawRoundedRect(textureContext, x + 152, y + 428, 126, 40, 6, "#a9c7e7", "#5e6d7c");
+  drawRoundedRect(textureContext, x + 148, y + 484, 138, 40, 6, "#a9c7e7", "#5e6d7c");
+  drawRoundedRect(textureContext, x + 142, y + 540, 150, 42, 6, "#a9c7e7", "#5e6d7c");
+
+  drawRoundedRect(textureContext, x + 383, y + 6, 106, 124, 0, "#ffffff", "#7d7d7d", 2);
+  drawRoundedRect(textureContext, x + 393, y + 33, 86, 30, 5, "#a9c7e7", "#5e6d7c");
+  drawRoundedRect(textureContext, x + 393, y + 71, 86, 30, 5, "#a9c7e7", "#5e6d7c");
+  drawRoundedRect(textureContext, x + 393, y + 109, 86, 30, 5, "#a9c7e7", "#5e6d7c");
+
+  drawLink(textureContext, x + 260, y + 50, x + 260, y + 61);
+  drawLink(textureContext, x + 260, y + 97, x + 260, y + 112);
+  drawLink(textureContext, x + 260, y + 164, x + 260, y + 182);
+  drawLink(textureContext, x + 59, y + 156, x + 59, y + 188);
+  drawLink(textureContext, x + 59, y + 224, x + 59, y + 358);
+
+  drawLink(textureContext, x + 214, y + 226, x + 160, y + 250);
+  drawLink(textureContext, x + 262, y + 226, x + 250, y + 250);
+  drawLink(textureContext, x + 310, y + 226, x + 348, y + 250);
+  drawLink(textureContext, x + 160, y + 284, x + 160, y + 298);
+  drawLink(textureContext, x + 250, y + 284, x + 250, y + 320);
+  drawLink(textureContext, x + 348, y + 284, x + 365, y + 298);
+
+  drawLink(textureContext, x + 160, y + 332, x + 160, y + 376);
+  drawLink(textureContext, x + 250, y + 354, x + 250, y + 376);
+  drawLink(textureContext, x + 365, y + 332, x + 365, y + 376);
+  drawLink(textureContext, x + 160, y + 391, x + 165, y + 391);
+  drawLink(textureContext, x + 265, y + 391, x + 365, y + 391);
+  drawLink(textureContext, x + 215, y + 412, x + 215, y + 428);
+  drawLink(textureContext, x + 215, y + 468, x + 215, y + 484);
+  drawLink(textureContext, x + 215, y + 524, x + 215, y + 540);
+  drawLink(textureContext, x + 110, y + 382, x + 142, y + 382);
+  drawLink(textureContext, x + 142, y + 382, x + 142, y + 561);
+
+  textureContext.fillStyle = "#1b2b39";
+  textureContext.textAlign = "center";
+  textureContext.textBaseline = "middle";
+  textureContext.font = "15px Aptos, Arial, sans-serif";
+  textureContext.fillText("Q-Bias - Political News Dataset (no", x + 260, y + 23);
+  textureContext.fillText("'center' label)", x + 260, y + 41);
+  textureContext.fillText("Fine Tuning", x + 59, y + 206);
+  textureContext.fillText("Processed Dataset", x + 262, y + 204);
+  textureContext.fillText("Llama Responses", x + 160, y + 315);
+  textureContext.fillText("Mistral Responses", x + 250, y + 337);
+  textureContext.fillText("Deepseek Responses", x + 365, y + 315);
+  textureContext.fillText("Hallucination Annotations", x + 215, y + 448);
+  textureContext.fillText("Hallucinations Datasets", x + 217, y + 504);
+  textureContext.fillText("Hallucinations Predicted", x + 217, y + 553);
+  textureContext.fillText("Leanings", x + 217, y + 571);
+  textureContext.fillText("Shape Classes:", x + 436, y + 18);
+  textureContext.fillText("Dataset", x + 436, y + 48);
+  textureContext.fillText("Process", x + 436, y + 86);
+  textureContext.fillText("Model", x + 436, y + 124);
+
+  textureContext.restore();
+}
+
+function drawThesisBarChart(textureContext, x, y, width, height) {
+  const labels = [
+    "Coronavirus",
+    "Economy And Jobs",
+    "Supreme Court",
+    "World",
+    "Middle East",
+    "Immigration",
+    "Elections",
+    "US House",
+    "Politics",
+    "Presidential Elections",
+    "Healthcare",
+    "Gun Control And Gun Rights",
+    "White House"
+  ];
+  const series = [
+    { label: "Llama", color: "#1f77b4", values: [6, 11, 17, 11, 15, 17, 19, 20, 21, 19, 25, 18, 19] },
+    { label: "Mistral", color: "#ff7f0e", values: [10, 18, 23, 15, 17, 21, 24, 23, 26, 25, 26, 32, 23] },
+    { label: "Deepseek", color: "#2ca02c", values: [17, 24, 25, 26, 32, 33, 35, 35.5, 35.5, 36.5, 36.8, 40, 41.5] }
+  ];
+  const maxValue = 42;
+  const chartLeft = x + 155;
+  const chartTop = y + 28;
+  const chartWidth = 390;
+  const chartHeight = 280;
+  const rowHeight = chartHeight / labels.length;
+  const clusterHeight = Math.min(19, rowHeight * 0.76);
+  const barHeight = clusterHeight / 3.3;
+
+  textureContext.save();
+  textureContext.fillStyle = "#111111";
+  textureContext.textAlign = "center";
+  textureContext.textBaseline = "top";
+  textureContext.font = "14px Aptos, Arial, sans-serif";
+  textureContext.fillText("Top Hallucinated Topics by Model (Normalized by Baseline)", x + width / 2, y);
+
+  textureContext.strokeStyle = "#a6a6a6";
+  textureContext.lineWidth = 1.6;
+  textureContext.strokeRect(chartLeft, chartTop, chartWidth, chartHeight);
+
+  textureContext.strokeStyle = "#d8d8d8";
+  textureContext.lineWidth = 1;
+
+  for (let tick = 0; tick <= 8; tick += 1) {
+    const tickX = chartLeft + (chartWidth * tick) / 8;
+    textureContext.beginPath();
+    textureContext.moveTo(tickX, chartTop);
+    textureContext.lineTo(tickX, chartTop + chartHeight);
+    textureContext.stroke();
+  }
+
+  textureContext.fillStyle = "#555555";
+  textureContext.textBaseline = "middle";
+  textureContext.textAlign = "right";
+  textureContext.font = "12px Aptos, Arial, sans-serif";
+
+  for (let index = 0; index < labels.length; index += 1) {
+    const rowY = chartTop + rowHeight * index + rowHeight / 2;
+    textureContext.fillText(labels[index], chartLeft - 6, rowY);
+  }
+
+  for (let row = 0; row < labels.length; row += 1) {
+    const top = chartTop + rowHeight * row + (rowHeight - clusterHeight) / 2;
+
+    for (let seriesIndex = 0; seriesIndex < series.length; seriesIndex += 1) {
+      const entry = series[seriesIndex];
+      const barTop = top + seriesIndex * (barHeight + 1);
+      const barWidth = (entry.values[row] / maxValue) * chartWidth;
+      textureContext.fillStyle = entry.color;
+      textureContext.fillRect(chartLeft, barTop, barWidth, barHeight);
+    }
+  }
+
+  textureContext.textAlign = "center";
+  textureContext.textBaseline = "top";
+  textureContext.fillStyle = "#555555";
+
+  for (let tick = 0; tick <= 8; tick += 1) {
+    const tickX = chartLeft + (chartWidth * tick) / 8;
+    textureContext.fillText(String(tick * 5), tickX, chartTop + chartHeight + 5);
+  }
+
+  textureContext.fillStyle = "#444444";
+  textureContext.fillText("Hallucination Rate Relative to Baseline (%)", chartLeft + chartWidth / 2, chartTop + chartHeight + 24);
+
+  textureContext.textAlign = "left";
+  textureContext.textBaseline = "middle";
+
+  for (let index = 0; index < series.length; index += 1) {
+    const legendX = x + 464;
+    const legendY = y + 36 + index * 19;
+    textureContext.fillStyle = series[index].color;
+    textureContext.fillRect(legendX, legendY, 15, 8);
+    textureContext.fillStyle = "#555555";
+    textureContext.fillText(series[index].label, legendX + 22, legendY + 4);
+  }
+
+  textureContext.restore();
 }
 
 function addBox(collection, config) {
