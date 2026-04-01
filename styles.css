@@ -2,6 +2,47 @@
   box-sizing: border-box;
 }
 
+:root {
+  --scene-width: 1949px;
+  --scene-height: 1116px;
+  --scene-scale: 1;
+  --projector-screen-left: 712px;
+  --projector-screen-top: 118px;
+  --projector-screen-width: 1371px;
+  --projector-screen-scale-x: 1.4;
+  --projector-screen-scale-y: 1;
+  --projector-screen-rotate-x: 0deg;
+  --projector-screen-rotate-y: 0deg;
+  --projector-screen-rotate-z: 0deg;
+  --projector-content-left: 1014px;
+  --projector-content-top: 330px;
+  --projector-content-width: 700px;
+  --projector-content-scale-x: 1.09;
+  --projector-content-scale-y: 1.03;
+  --projector-content-rotate-x: 4.8deg;
+  --projector-content-rotate-y: -10.9deg;
+  --projector-content-rotate-z: -1.7deg;
+  --cowboy-figure-left: 340px;
+  --cowboy-figure-top: 430px;
+  --cowboy-figure-width: 696px;
+  --cowboy-figure-height: 686px;
+  --cowboy-still-left: -6px;
+  --cowboy-still-top: -103px;
+  --cowboy-still-width: 400px;
+  --cowboy-opening-left: -6px;
+  --cowboy-opening-top: -103px;
+  --cowboy-opening-width: 400px;
+  --cowboy-hold-left: -6px;
+  --cowboy-hold-top: -103px;
+  --cowboy-hold-width: 400px;
+  --cowboy-final-left: -6px;
+  --cowboy-final-top: -103px;
+  --cowboy-final-width: 400px;
+  --cowboy-beams-left: -10px;
+  --cowboy-beams-top: -4px;
+  --cowboy-beams-width: 708px;
+}
+
 html,
 body {
   margin: 0;
@@ -27,9 +68,10 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 1920px;
-  height: 1080px;
-  transform: translate(-50%, -50%);
+  width: var(--scene-width);
+  height: var(--scene-height);
+  transform: translate(-50%, -50%) scale(var(--scene-scale));
+  transform-origin: center center;
   overflow: hidden;
 }
 
@@ -46,78 +88,188 @@ body {
   z-index: 0;
 }
 
-.screen-menu {
+.screen-content {
   z-index: 1;
 }
 
-.avatar,
-.hamster-wheel {
+.cowboy-figure {
   z-index: 2;
 }
 
-.screen-menu {
+.screen-content {
   position: absolute;
-  left: 960px;
-  top: 392px;
-  width: 560px;
-  color: #000;
-  text-align: center;
+  left: var(--projector-content-left);
+  top: var(--projector-content-top);
+  width: var(--projector-content-width);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
   transform-origin: top center;
-  transform: perspective(1200px) rotateX(0deg) rotateY(-3deg) rotateZ(-3deg);
+  transform:
+    perspective(1200px)
+    rotateX(var(--projector-content-rotate-x))
+    rotateY(var(--projector-content-rotate-y))
+    rotateZ(var(--projector-content-rotate-z))
+    scaleX(var(--projector-content-scale-x))
+    scaleY(var(--projector-content-scale-y));
+  transition: opacity 35ms linear;
 }
 
-.screen-title {
-  margin: 0;
-  font-size: 50px;
-  line-height: 1.05;
-  font-weight: 700;
+.screen-content.is-projecting {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.screen-content-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.screen-status-box {
+  position: absolute;
+  left: 31.5%;
+  top: 23.9%;
+  width: 36.7%;
+  height: 9.8%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.screen-status-text {
+  color: #fff;
+  font-family: "Courier New", monospace;
+  font-size: 34px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1;
   white-space: nowrap;
 }
 
-.screen-subtitle {
-  margin: 8px 0 16px;
-  font-size: 28px;
-  line-height: 1.1;
-}
-
-.screen-links {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-}
-
-.screen-link {
-  display: inline-block;
-  min-width: 0;
-  padding: 9px 22px;
-  border-radius: 16px;
-  background: #d9d9d9;
-  color: #000;
-  font-size: 24px;
-  line-height: 1.1;
-  font-weight: 700;
+.screen-hotspot {
+  position: absolute;
+  left: 13%;
+  width: 74%;
+  border-radius: 999px;
+  color: transparent;
   text-decoration: none;
+  outline: none;
 }
 
-.avatar {
-  left: 360px;
-  top: 430px;
-  width: 675px;
+.screen-hotspot--gallery {
+  top: 51.2%;
+  height: 11%;
+}
+
+.screen-hotspot--projects {
+  top: 65.8%;
+  height: 11%;
+}
+
+.screen-hotspot--education {
+  top: 80.4%;
+  height: 10%;
+}
+
+.screen-hotspot:hover,
+.screen-hotspot:focus-visible {
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.3);
+}
+
+.cowboy-figure {
+  position: absolute;
+  left: var(--cowboy-figure-left);
+  top: var(--cowboy-figure-top);
+  width: var(--cowboy-figure-width);
+  height: var(--cowboy-figure-height);
+}
+
+.cowboy-layer {
+  position: absolute;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+.cowboy-body,
+.cowboy-beams {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.cowboy-body {
+  z-index: 1;
+}
+
+.cowboy-head {
+  opacity: 0;
+  z-index: 2;
+}
+
+.cowboy-head.is-active {
+  opacity: 1;
+}
+
+.cowboy-head--still,
+.cowboy-head--opening,
+.cowboy-head--hold {
   height: auto;
 }
 
-.hamster-wheel {
-  left: 467px;
-  top: 363px;
-  width: 170px;
+.cowboy-head--still {
+  left: var(--cowboy-still-left);
+  top: var(--cowboy-still-top);
+  width: var(--cowboy-still-width);
+}
+
+.cowboy-head--opening {
+  left: var(--cowboy-opening-left);
+  top: var(--cowboy-opening-top);
+  width: var(--cowboy-opening-width);
+}
+
+.cowboy-head--hold {
+  left: var(--cowboy-hold-left);
+  top: var(--cowboy-hold-top);
+  width: var(--cowboy-hold-width);
+}
+
+.cowboy-head--final {
+  left: var(--cowboy-final-left);
+  top: var(--cowboy-final-top);
+  width: var(--cowboy-final-width);
   height: auto;
-  border-radius: 50%;
+}
+
+.cowboy-beams {
+  left: var(--cowboy-beams-left);
+  top: var(--cowboy-beams-top);
+  width: var(--cowboy-beams-width);
+  height: auto;
+  z-index: 3;
+  opacity: 0;
+  filter: brightness(1.08);
+  transition: opacity 35ms linear;
 }
 
 .screen {
-  left: 578px;
-  top: 118px;
-  width: 1371px;
+  left: var(--projector-screen-left);
+  top: var(--projector-screen-top);
+  width: var(--projector-screen-width);
   height: auto;
+  transform-origin: center center;
+  transform:
+    perspective(1400px)
+    rotateX(var(--projector-screen-rotate-x))
+    rotateY(var(--projector-screen-rotate-y))
+    rotateZ(var(--projector-screen-rotate-z))
+    scaleX(var(--projector-screen-scale-x))
+    scaleY(var(--projector-screen-scale-y));
 }

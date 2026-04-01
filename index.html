@@ -5,22 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Homepage</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="index.js" defer></script>
 </head>
 <body>
   <main class="viewport" aria-label="Homepage artwork composition">
     <div class="stage">
-      <section class="screen-menu" aria-label="Projector screen menu">
-        <h1 class="screen-title">Liam Cunningham</h1>
-        <p class="screen-subtitle">[Random Interest]</p>
-        <nav class="screen-links" aria-label="Site sections">
-          <a class="screen-link" href="academic-gallery.html">Academic Gallery</a>
-          <a class="screen-link" href="personal-projects.html">Personal Projects</a>
-          <a class="screen-link" href="education.html">Education</a>
-          <a class="screen-link" href="#">Art</a>
+      <div class="cowboy-figure" aria-hidden="true">
+        <img class="cowboy-layer cowboy-body" src="homeAnimation/cowboyBody.png" alt="">
+        <img class="cowboy-layer cowboy-head cowboy-head--still is-active" src="homeAnimation/L1_rightup-cutout.png" alt="">
+        <img class="cowboy-layer cowboy-head cowboy-head--opening" data-src="homeAnimation/openingHammy.gif" alt="">
+        <img class="cowboy-layer cowboy-head cowboy-head--hold" src="homeAnimation/openingHammy-hold.png" alt="">
+        <img class="cowboy-layer cowboy-head cowboy-head--final" data-src="homeAnimation/hammyHead.gif" alt="">
+        <img class="cowboy-layer cowboy-beams" src="homeAnimation/eyeBeams%20(1).png" alt="">
+      </div>
+      <section class="screen-content" aria-label="Projector screen menu">
+        <img class="screen-content-image" src="homeAnimation/projectorContent.png" alt="">
+        <div class="screen-status-box" aria-hidden="true">
+          <span class="screen-status-text">Work in</span>
+        </div>
+        <nav class="screen-hotspots" aria-label="Site sections">
+          <a class="screen-hotspot screen-hotspot--gallery" href="academic-gallery.html">Academic Gallery</a>
+          <a class="screen-hotspot screen-hotspot--projects" href="personal-projects.html">Personal Projects</a>
+          <a class="screen-hotspot screen-hotspot--education" href="education.html">Education</a>
         </nav>
       </section>
-      <img class="avatar" src="avatar.png" alt="">
-      <img class="hamster-wheel" src="hamsterwheel.gif" alt="">
       <img class="screen" src="projectorscreen.png" alt="">
     </div>
   </main>
