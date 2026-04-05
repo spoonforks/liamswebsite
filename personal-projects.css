@@ -16,6 +16,23 @@
 
 html,
 body {
+  cursor: url("customCursor/p3-medium.cur"), auto;
+}
+
+a,
+button,
+[role="button"],
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+label[for],
+summary,
+select {
+  cursor: url("customCursor/p1-medium.cur"), pointer;
+}
+
+html,
+body {
   margin: 0;
   min-height: 100%;
   background:
@@ -105,7 +122,7 @@ body {
   font-family: Georgia, serif;
   font-size: clamp(1.35rem, 2.1vw, 1.7rem);
   line-height: 1;
-  cursor: pointer;
+  cursor: url("customCursor/p1-medium.cur"), pointer;
   transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
 }
 

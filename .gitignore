@@ -1,0 +1,12 @@
+.venv/
+miktex-config/
+chrome-*/
+homeAnimation/prompt.txt
+gallery-multiframe-preview.png
+home-hover-check.png
+home-projector-flicker-check.png
+index-projector-editor-check.png
+preview.png
+projector-final-check.png
+projector-post-flicker-check.png
+projector-pre-flicker-check.png
