@@ -63,6 +63,12 @@ body {
   place-items: center;
   padding: clamp(1.5rem, 5vw, 4rem);
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms ease-out;
+}
+
+.about-page.is-scene-ready .secret-note {
+  opacity: 1;
 }
 
 .secret-note-card {

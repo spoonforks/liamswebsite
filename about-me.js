@@ -13,6 +13,7 @@ const dragState = {
   startY: 0,
   top: 0,
 };
+let hasMarkedSceneReady = false;
 
 function getMarginPixels(cm) {
   return cm * PX_PER_CM;
@@ -90,6 +91,23 @@ function updateAboutScale() {
   scaleFrame.classList.add("is-ready");
 }
 
+function markSceneReady() {
+  if (hasMarkedSceneReady) {
+    return;
+  }
+
+  const aboutPage = document.querySelector(".about-page");
+
+  if (!aboutPage) {
+    return;
+  }
+
+  hasMarkedSceneReady = true;
+  window.requestAnimationFrame(() => {
+    aboutPage.classList.add("is-scene-ready");
+  });
+}
+
 function initializeAboutDrag() {
   const elements = getWindowElements();
 
@@ -158,6 +176,7 @@ function initializeAboutDrag() {
 window.addEventListener("load", () => {
   initializeAboutDrag();
   updateAboutScale();
+  markSceneReady();
 
   if (document.fonts?.ready) {
     document.fonts.ready.then(updateAboutScale);
