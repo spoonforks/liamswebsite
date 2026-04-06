@@ -96,6 +96,128 @@ body {
   z-index: 0;
 }
 
+.site-info-toggle,
+.site-info-panel {
+  position: fixed;
+  z-index: 40;
+}
+
+.site-info-toggle {
+  right: clamp(0.8rem, 1.8vw, 1.4rem);
+  bottom: clamp(0.65rem, 1.5vw, 1.2rem);
+  padding: 0.48rem 0.78rem;
+  border: none;
+  border-radius: 0.4rem;
+  background: rgba(26, 26, 26, 0.76);
+  color: #f2f2f2;
+  font-family: "Courier New", monospace;
+  font-size: 0.88rem;
+  line-height: 1;
+  backdrop-filter: blur(8px);
+  transition: transform 140ms ease, background-color 140ms ease, border-color 140ms ease;
+}
+
+.site-info-toggle:hover,
+.site-info-toggle:focus-visible {
+  background: rgba(42, 42, 42, 0.86);
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+.site-info-toggle:focus-visible,
+.site-info-close:focus-visible,
+.site-info-panel a:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.72);
+  outline-offset: 3px;
+}
+
+.site-info-panel {
+  top: auto;
+  right: clamp(0.8rem, 1.6vw, 1.3rem);
+  bottom: clamp(3.2rem, 5.5vw, 4.8rem);
+  width: min(31rem, calc(100vw - 1.6rem));
+  max-height: none;
+  padding: 1rem 1.15rem 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1rem;
+  background: rgba(34, 34, 34, 0.82);
+  color: #fafafa;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.34);
+  transform: none;
+}
+
+.site-info-panel[hidden] {
+  display: none;
+}
+
+.site-info-panel h2,
+.site-info-panel h3,
+.site-info-panel p {
+  margin: 0;
+}
+
+.site-info-header {
+  display: grid;
+  grid-template-columns: 1.4rem minmax(0, 1fr);
+  align-items: center;
+  column-gap: 0.7rem;
+}
+
+.site-info-panel h2 {
+  font-family: Georgia, serif;
+  font-size: clamp(1.22rem, 2vw, 1.8rem);
+  font-weight: 400;
+  line-height: 1.05;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.site-info-section {
+  margin-top: 0.7rem;
+  text-align: right;
+}
+
+.site-info-section h3 {
+  font-family: "Courier New", monospace;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.site-info-section p {
+  margin-top: 0.12rem;
+  font-family: "Courier New", monospace;
+  font-size: 0.72rem;
+  line-height: 1.2;
+}
+
+.site-info-panel a {
+  color: #fafafa;
+  text-decoration: none;
+  word-break: break-word;
+}
+
+.site-info-panel a:hover {
+  text-decoration: underline;
+}
+
+.site-info-close {
+  position: static;
+  display: grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-family: Georgia, serif;
+  font-size: 1.55rem;
+  line-height: 1;
+}
+
 .stage {
   position: absolute;
   top: calc(50% + var(--scene-offset-y));
@@ -421,4 +543,12 @@ body {
     rotateZ(var(--projector-screen-rotate-z))
     scaleX(var(--projector-screen-scale-x))
     scaleY(var(--projector-screen-scale-y));
+}
+
+@media (max-width: 760px) {
+  .site-info-panel {
+    right: 0.8rem;
+    left: 0.8rem;
+    width: auto;
+  }
 }

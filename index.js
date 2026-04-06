@@ -22,6 +22,7 @@ const PROJECTOR_STATUS_TERMS = [
 ];
 const PROJECTOR_STATUS_SEPARATOR = "  ][  ";
 const PROJECTOR_STATUS_SCROLL_SPEED_PX_PER_SECOND = 112;
+const PROJECTOR_STATUS_REPEAT_COUNT = 4;
 const FLICKER_STEPS = [
   [0, 1, 0.85],
   [70, 0.28, 0.88],
@@ -90,6 +91,14 @@ function startProjectorStatusCycle() {
     return;
   }
 
+  const existingNodes = [...trackNode.querySelectorAll(".screen-status-text")];
+
+  for (let index = existingNodes.length; index < PROJECTOR_STATUS_REPEAT_COUNT; index += 1) {
+    const duplicateNode = existingNodes[0].cloneNode(false);
+    duplicateNode.setAttribute("aria-hidden", "true");
+    trackNode.appendChild(duplicateNode);
+  }
+
   const textNodes = [...trackNode.querySelectorAll(".screen-status-text")];
 
   if (textNodes.length < 2) {
@@ -117,9 +126,33 @@ function triggerProjectorContentFlicker(node) {
   }
 }
 
+function initializeSiteInfoPanel() {
+  const toggleButton = document.querySelector(".site-info-toggle");
+  const panel = document.querySelector(".site-info-panel");
+  const closeButton = document.querySelector(".site-info-close");
+
+  if (!toggleButton || !panel || !closeButton) {
+    return;
+  }
+
+  const setPanelOpen = (isOpen) => {
+    panel.hidden = !isOpen;
+    toggleButton.setAttribute("aria-expanded", String(isOpen));
+  };
+
+  toggleButton.addEventListener("click", () => {
+    setPanelOpen(panel.hidden);
+  });
+
+  closeButton.addEventListener("click", () => {
+    setPanelOpen(false);
+  });
+}
+
 window.addEventListener("load", async () => {
   updateSceneScale();
   startProjectorStatusCycle();
+  initializeSiteInfoPanel();
   const figure = document.querySelector(".cowboy-figure");
   const projectorContent = document.querySelector(".screen-content");
 
