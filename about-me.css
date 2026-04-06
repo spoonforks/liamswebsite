@@ -55,26 +55,97 @@ body {
   overflow: hidden;
 }
 
+.secret-note {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  padding: clamp(1.5rem, 5vw, 4rem);
+  pointer-events: none;
+}
+
+.secret-note-card {
+  display: grid;
+  grid-template-columns: clamp(200px, 20vw, 310px) minmax(220px, 1fr);
+  gap: clamp(0.8rem, 2vw, 2rem);
+  align-items: center;
+  max-width: min(920px, 100%);
+}
+
+.secret-note-symbol {
+  margin: 0;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  align-self: center;
+  transform: translateY(0.22em);
+}
+
+.secret-note-symbol img {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+  object-fit: contain;
+}
+
+.secret-note-copy {
+  display: grid;
+  gap: 0.05em;
+  font-family: inherit;
+  font-size: clamp(2.1rem, 4.6vw, 4.8rem);
+  line-height: 0.98;
+  color: rgba(32, 32, 32, 0.9);
+  text-align: center;
+  justify-items: center;
+}
+
+.secret-note-copy p {
+  margin: 0.14em 0 0;
+}
+
+.secret-note-lead {
+  display: grid;
+  justify-items: center;
+  line-height: 0.92;
+}
+
+.secret-note-found-line {
+  position: relative;
+  display: inline-block;
+}
+
+.secret-note-found {
+  display: inline-block;
+}
+
+.secret-note-ellipsis {
+  position: absolute;
+  left: calc(100% + 0.02em);
+  top: 50%;
+  transform: translateY(-44%);
+}
+
 .home-link {
   position: fixed;
-  top: 1rem;
-  left: 1rem;
-  z-index: 20;
-  padding: 0.65rem 0.95rem;
-  border: 1px solid rgba(0, 0, 0, 0.18);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.2);
-  color: #202020;
+  top: 0;
+  left: clamp(0.45rem, 1vw, 0.85rem);
+  z-index: 30;
+  display: block;
+  width: clamp(64px, 5vw, 82px);
+  aspect-ratio: 649 / 419;
+  border-radius: 0.7rem;
+  background: center / contain no-repeat url("homeButton/hb1.png");
   text-decoration: none;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-size: 0.78rem;
-  backdrop-filter: blur(12px);
-  transition: background-color 160ms ease, transform 160ms ease;
+  transition: transform 160ms ease;
 }
 
 .terminal-scale-frame {
-  position: relative;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10;
   opacity: 0;
   transition: opacity 120ms ease-out;
 }
@@ -85,8 +156,13 @@ body {
 
 .home-link:hover,
 .home-link:focus-visible {
-  background: rgba(255, 255, 255, 0.36);
+  background-image: url("homeButton/hb2.png");
   transform: translateY(-1px);
+}
+
+.home-link:focus-visible {
+  outline: 2px solid rgba(17, 17, 17, 0.38);
+  outline-offset: 3px;
 }
 
 .terminal-window {
@@ -107,6 +183,13 @@ body {
   gap: 1rem;
   background: var(--titlebar-bg);
   border-bottom: 1px solid var(--titlebar-border);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.terminal-titlebar.is-dragging {
+  cursor: grabbing;
 }
 
 .terminal-title {
@@ -131,6 +214,11 @@ body {
 .terminal-controls {
   display: flex;
   align-self: stretch;
+  cursor: default;
+}
+
+body.is-dragging-window {
+  user-select: none;
 }
 
 .terminal-control {
@@ -143,7 +231,7 @@ body {
 }
 
 .terminal-control--close {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--titlebar-bg);
 }
 
 .terminal-hero {
@@ -171,11 +259,11 @@ body {
 }
 
 .prompt-row {
-  align-items: baseline;
+  align-items: center;
 }
 
 .prompt-row--title {
-  align-items: start;
+  align-items: center;
   margin-bottom: clamp(0.8rem, 1.5vw, 1.25rem);
 }
 
@@ -184,12 +272,12 @@ body {
   font-size: clamp(1.1rem, 1.5vw, 1.8rem);
   line-height: 1;
   color: var(--text);
-  transform: translateY(0.18em);
+  transform: translateY(0);
 }
 
 .prompt-row--title .prompt-mark {
   font-size: clamp(2.2rem, 3.8vw, 4.1rem);
-  transform: translateY(0.23em);
+  transform: translateY(0);
 }
 
 h1 {
@@ -240,7 +328,13 @@ h1 {
 }
 
 .prompt-block {
-  align-items: start;
+  align-items: baseline;
+  align-items: first baseline;
+}
+
+.prompt-block .prompt-mark {
+  line-height: 1;
+  transform: translateY(0);
 }
 
 .prompt-block p {
@@ -248,4 +342,11 @@ h1 {
   color: var(--muted);
   font-size: clamp(0.96rem, 1.18vw, 1.3rem);
   line-height: 1.24;
+}
+
+@media (max-width: 820px) {
+  .secret-note-card {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+  }
 }

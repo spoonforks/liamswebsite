@@ -68,67 +68,108 @@ body {
 
 .gallery-panel {
   position: absolute;
-  max-width: min(28rem, calc(100vw - 2rem));
-  padding: 1.1rem 1.2rem;
+  max-width: min(40rem, calc(100vw - 2rem));
+  padding: 1.45rem 1.5rem;
   border: 1px solid var(--line);
-  border-radius: 1.35rem;
-  background: var(--paper-strong);
+  border-radius: 0.8rem;
+  background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(16px);
   box-shadow: 0 18px 50px rgba(70, 65, 53, 0.12);
   transition: opacity 180ms ease, transform 180ms ease;
 }
 
 .gallery-intro {
-  top: 1.2rem;
-  left: 1.2rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
 }
 
 .gallery-status {
   right: 1.2rem;
   bottom: 1.2rem;
-  text-align: right;
-}
-
-.gallery-kicker {
-  margin: 0 0 0.35rem;
-  font-size: 0.74rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
+  max-width: none;
+  padding: 0.72rem 1rem;
+  text-align: center;
 }
 
 .gallery-intro h1 {
   margin: 0;
   font-family: Georgia, serif;
-  font-size: clamp(2rem, 5vw, 3.1rem);
-  line-height: 0.95;
+  font-size: clamp(1.8rem, 4.3vw, 2.85rem);
+  line-height: 1.02;
   font-weight: 700;
 }
 
 .gallery-copy,
 .gallery-status p {
-  margin: 0;
   font-size: 0.97rem;
   line-height: 1.45;
   color: var(--ink-muted);
 }
 
+.gallery-status p {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
 .gallery-copy {
-  margin-top: 0.9rem;
-  max-width: 34ch;
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.24rem;
+  justify-items: center;
+}
+
+.gallery-copy p {
+  margin: 0;
+}
+
+.gallery-copy-spacer {
+  min-height: 0.9rem;
+}
+
+.gallery-controls-heading {
+  margin-top: 0.15rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.home-link {
+  position: fixed;
+  top: 0;
+  left: clamp(0.45rem, 1vw, 0.85rem);
+  z-index: 30;
+  display: block;
+  width: clamp(64px, 5vw, 82px);
+  aspect-ratio: 649 / 419;
+  border-radius: 0.7rem;
+  background: center / contain no-repeat url("homeButton/hb1.png");
+  text-decoration: none;
+  transition: transform 160ms ease;
+}
+
+.home-link:hover,
+.home-link:focus-visible {
+  background-image: url("homeButton/hb2.png");
+  transform: translateY(-1px);
+}
+
+.home-link:focus-visible {
+  outline: 2px solid rgba(17, 17, 17, 0.35);
+  outline-offset: 3px;
 }
 
 .gallery-actions {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  margin-top: 1rem;
+  justify-content: center;
+  margin-top: 1.15rem;
   pointer-events: auto;
 }
 
-.gallery-button,
-.gallery-link {
+.gallery-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -146,19 +187,13 @@ body {
   color: #f8f8f6;
 }
 
-.gallery-link {
-  border: 1px solid var(--line);
-  color: var(--ink);
-  background: rgba(255, 255, 255, 0.64);
-}
-
 .gallery-button:hover,
-.gallery-link:hover {
+.home-link:hover {
   transform: translateY(-1px);
 }
 
 .gallery-button:focus-visible,
-.gallery-link:focus-visible {
+.home-link:focus-visible {
   outline: 2px solid rgba(17, 17, 17, 0.35);
   outline-offset: 3px;
 }
@@ -167,31 +202,17 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 22px;
-  height: 22px;
+  width: 12px;
+  height: 12px;
   transform: translate(-50%, -50%);
   border-radius: 50%;
+  border: 1.5px solid rgba(17, 17, 17, 0.48);
   pointer-events: none;
 }
 
 .gallery-crosshair::before,
 .gallery-crosshair::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  background: rgba(17, 17, 17, 0.48);
-  transform: translate(-50%, -50%);
-}
-
-.gallery-crosshair::before {
-  width: 18px;
-  height: 1px;
-}
-
-.gallery-crosshair::after {
-  width: 1px;
-  height: 18px;
+  content: none;
 }
 
 body.is-locked {
@@ -199,8 +220,9 @@ body.is-locked {
 }
 
 body.is-locked .gallery-intro {
-  opacity: 0.16;
-  transform: translateY(-8px);
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, calc(-50% - 8px));
 }
 
 body.is-locked .gallery-status {
@@ -216,7 +238,8 @@ body.is-locked .gallery-status {
   }
 
   .gallery-intro {
-    top: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
   }
 
   .gallery-status {

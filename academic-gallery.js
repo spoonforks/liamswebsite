@@ -1,7 +1,6 @@
 const canvas = document.getElementById("gallery-canvas");
 const context = canvas.getContext("2d");
 const lockButton = document.getElementById("lock-button");
-const movementStatus = document.getElementById("movement-status");
 const lockStatus = document.getElementById("lock-status");
 
 const room = {
@@ -26,7 +25,21 @@ const movement = {
   lookSensitivity: 0.0022
 };
 
+const THESIS_PLAQUE_BUTTON_BOUNDS = {
+  x: 170,
+  y: 522,
+  width: 420,
+  height: 148
+};
+const TREE_VIDEO_BUTTON_BOUNDS = {
+  x: 242,
+  y: 528,
+  width: 376,
+  height: 136
+};
+
 const state = {
+  interactiveRegions: [],
   pressed: new Set(),
   lastFrame: performance.now(),
   width: window.innerWidth,
@@ -35,6 +48,8 @@ const state = {
   dpr: 1
 };
 
+const THESIS_PDF_URL = encodeURI("Academic Works/Thesis/liamThesis.pdf");
+const TREE_VIDEO_URL = "https://youtu.be/ox3WYoONv8k";
 const frameImage = new Image();
 frameImage.src = "goldframe.png";
 const thesisFrameImage = new Image();
@@ -49,6 +64,9 @@ const thesisPipelineImage = new Image();
 thesisPipelineImage.src = "Academic Works/Thesis/thesisFrame-pipeline.png";
 const thesisChartImage = new Image();
 thesisChartImage.src = "Academic Works/Thesis/thesisFrame-chart.png";
+const thesisPlaqueTexture = createThesisPlaqueTexture();
+const parametricPlaqueTexture = createParametricPlaqueTexture();
+const treeBiodiversityPlaqueTexture = createTreeBiodiversityPlaqueTexture();
 const benchModelData = window.BENCH_MODEL_DATA || null;
 const frameOpening = {
   left: 88 / 911,
@@ -108,7 +126,11 @@ function buildScene() {
       wall: "west",
       center: 0,
       width: 9.6,
-      height: 6.4
+      height: 6.4,
+      content: {
+        type: "text",
+        text: "Coming soon"
+      }
     }
   ];
 
@@ -1045,6 +1067,167 @@ function addFramedArtwork(collection, lineCollection, spriteCollection, config) 
     points: frameQuad,
     depthBias: -3
   });
+
+  if (config.content?.type === "thesis") {
+    addSprite(spriteCollection, {
+      image: thesisPlaqueTexture,
+      points: getWallQuad(config.wall, 6.25, 2.24, 2.05, 2.5, frameDepth + 0.002),
+      depthBias: -2.6,
+      interactive: {
+        hotspot: THESIS_PLAQUE_BUTTON_BOUNDS,
+        url: THESIS_PDF_URL
+      }
+    });
+  }
+
+  if (config.content?.type === "parametric") {
+    addSprite(spriteCollection, {
+      image: parametricPlaqueTexture,
+      points: getWallQuad(config.wall, 6.2, 2.32, 2.2, 1.85, frameDepth + 0.002),
+      depthBias: -2.6
+    });
+  }
+
+  if (config.content?.type === "treeBiodiversity") {
+    addSprite(spriteCollection, {
+      image: treeBiodiversityPlaqueTexture,
+      points: getWallQuad(config.wall, -6.8, 2.12, 2.6, 2.4, frameDepth + 0.002),
+      depthBias: -2.6,
+      interactive: {
+        hotspot: TREE_VIDEO_BUTTON_BOUNDS,
+        url: TREE_VIDEO_URL
+      }
+    });
+  }
+}
+
+function createThesisPlaqueTexture() {
+  const texture = document.createElement("canvas");
+  texture.width = 760;
+  texture.height = 820;
+  const textureContext = texture.getContext("2d");
+  const inset = 28;
+  const buttonWidth = THESIS_PLAQUE_BUTTON_BOUNDS.width;
+  const buttonHeight = THESIS_PLAQUE_BUTTON_BOUNDS.height;
+  const buttonX = THESIS_PLAQUE_BUTTON_BOUNDS.x;
+  const buttonY = THESIS_PLAQUE_BUTTON_BOUNDS.y;
+
+  textureContext.fillStyle = "#fdfcf9";
+  textureContext.strokeStyle = "rgba(41, 36, 31, 0.18)";
+  textureContext.lineWidth = 6;
+  roundRect(textureContext, inset, inset, texture.width - inset * 2, texture.height - inset * 2, 32);
+  textureContext.fill();
+  textureContext.stroke();
+
+  textureContext.fillStyle = "#131313";
+  textureContext.textAlign = "center";
+  textureContext.textBaseline = "middle";
+  textureContext.font = "700 92px Georgia, serif";
+  textureContext.fillText("Bachelor", texture.width / 2, 240);
+  textureContext.fillText("Thesis", texture.width / 2, 350);
+
+  textureContext.fillStyle = "#ffffff";
+  textureContext.strokeStyle = "#111111";
+  textureContext.lineWidth = 8;
+  roundRect(textureContext, buttonX, buttonY, buttonWidth, buttonHeight, 40);
+  textureContext.fill();
+  textureContext.stroke();
+
+  textureContext.fillStyle = "#111111";
+  textureContext.font = "700 62px Aptos, 'Segoe UI', sans-serif";
+  textureContext.fillText("Read More", texture.width / 2, buttonY + buttonHeight / 2 + 2);
+
+  textureContext.font = "500 30px Aptos, 'Segoe UI', sans-serif";
+  textureContext.fillText("* You can click on this button *", texture.width / 2, 738);
+
+  return texture;
+}
+
+function createParametricPlaqueTexture() {
+  const texture = document.createElement("canvas");
+  texture.width = 760;
+  texture.height = 620;
+  const textureContext = texture.getContext("2d");
+  const inset = 28;
+
+  textureContext.fillStyle = "#fdfcf9";
+  textureContext.strokeStyle = "rgba(41, 36, 31, 0.18)";
+  textureContext.lineWidth = 6;
+  roundRect(textureContext, inset, inset, texture.width - inset * 2, texture.height - inset * 2, 32);
+  textureContext.fill();
+  textureContext.stroke();
+
+  textureContext.fillStyle = "#131313";
+  textureContext.textAlign = "center";
+  textureContext.textBaseline = "middle";
+  textureContext.font = "700 76px Georgia, serif";
+  textureContext.fillText("Parametric", texture.width / 2, 238);
+  textureContext.fillText("Design", texture.width / 2, 332);
+
+  textureContext.fillStyle = "rgba(19, 19, 19, 0.72)";
+  textureContext.font = "500 40px Aptos, 'Segoe UI', sans-serif";
+  textureContext.fillText("Work in progress", texture.width / 2, 462);
+
+  return texture;
+}
+
+function createTreeBiodiversityPlaqueTexture() {
+  const texture = document.createElement("canvas");
+  texture.width = 860;
+  texture.height = 860;
+  const textureContext = texture.getContext("2d");
+  const inset = 28;
+  const buttonX = TREE_VIDEO_BUTTON_BOUNDS.x;
+  const buttonY = TREE_VIDEO_BUTTON_BOUNDS.y;
+  const buttonWidth = TREE_VIDEO_BUTTON_BOUNDS.width;
+  const buttonHeight = TREE_VIDEO_BUTTON_BOUNDS.height;
+  const helperTextY = 734;
+
+  textureContext.fillStyle = "#fdfcf9";
+  textureContext.strokeStyle = "rgba(41, 36, 31, 0.18)";
+  textureContext.lineWidth = 6;
+  roundRect(textureContext, inset, inset, texture.width - inset * 2, texture.height - inset * 2, 32);
+  textureContext.fill();
+  textureContext.stroke();
+
+  textureContext.fillStyle = "#131313";
+  textureContext.textAlign = "center";
+  textureContext.textBaseline = "middle";
+  textureContext.font = "700 64px Georgia, serif";
+  textureContext.fillText("Tree Biodiversity", texture.width / 2, 220);
+  textureContext.fillText("in Amsterdam", texture.width / 2, 306);
+
+  textureContext.fillStyle = "rgba(19, 19, 19, 0.78)";
+  textureContext.font = "500 42px Aptos, 'Segoe UI', sans-serif";
+  textureContext.fillText("Watch the video:", texture.width / 2, 426);
+
+  textureContext.fillStyle = "#ffffff";
+  textureContext.strokeStyle = "#111111";
+  textureContext.lineWidth = 8;
+  roundRect(textureContext, buttonX, buttonY, buttonWidth, buttonHeight, 40);
+  textureContext.fill();
+  textureContext.stroke();
+
+  textureContext.fillStyle = "#111111";
+  textureContext.font = "700 54px Aptos, 'Segoe UI', sans-serif";
+  textureContext.fillText("Watch Here", texture.width / 2, buttonY + buttonHeight / 2 + 1);
+
+  textureContext.fillStyle = "rgba(19, 19, 19, 0.78)";
+  textureContext.font = "500 28px Aptos, 'Segoe UI', sans-serif";
+  textureContext.fillText("* you can click on this button *", texture.width / 2, helperTextY);
+
+  return texture;
+}
+
+function roundRect(drawingContext, x, y, width, height, radius) {
+  const clampedRadius = Math.min(radius, width / 2, height / 2);
+  drawingContext.beginPath();
+  drawingContext.moveTo(x + clampedRadius, y);
+  drawingContext.arcTo(x + width, y, x + width, y + height, clampedRadius);
+  drawingContext.arcTo(x + width, y + height, x, y + height, clampedRadius);
+  drawingContext.arcTo(x, y + height, x, y, clampedRadius);
+  drawingContext.arcTo(x, y, x + width, y, clampedRadius);
+  drawingContext.closePath();
 }
 
 function hexToRgb(hex) {
@@ -1372,27 +1555,12 @@ function projectPoint(point) {
   };
 }
 
-function interpolatePoint(start, end, t) {
-  return {
-    x: start.x + (end.x - start.x) * t,
-    y: start.y + (end.y - start.y) * t
-  };
-}
-
-function drawProjectedSprite(sprite) {
-  const source = sprite.image;
-  const sourceWidth = source.naturalWidth || source.videoWidth || source.width;
-  const sourceHeight = source.naturalHeight || source.videoHeight || source.height;
-
-  if ((source.complete === false) || !sourceWidth || !sourceHeight) {
-    return;
-  }
-
+function getProjectedSpriteQuad(sprite) {
   const nearPlane = 0.08;
   const cameraPoints = sprite.points.map(toCameraSpace);
 
   if (cameraPoints.some((point) => point.z <= nearPlane)) {
-    return;
+    return null;
   }
 
   let [topLeft, topRight, bottomRight, bottomLeft] = cameraPoints.map(projectPoint);
@@ -1409,6 +1577,33 @@ function drawProjectedSprite(sprite) {
   if (topEdgeY > bottomEdgeY) {
     [topLeft, topRight, bottomRight, bottomLeft] = [bottomLeft, bottomRight, topRight, topLeft];
   }
+
+  return [topLeft, topRight, bottomRight, bottomLeft];
+}
+
+function interpolatePoint(start, end, t) {
+  return {
+    x: start.x + (end.x - start.x) * t,
+    y: start.y + (end.y - start.y) * t
+  };
+}
+
+function drawProjectedSprite(sprite) {
+  const source = sprite.image;
+  const sourceWidth = source.naturalWidth || source.videoWidth || source.width;
+  const sourceHeight = source.naturalHeight || source.videoHeight || source.height;
+
+  if ((source.complete === false) || !sourceWidth || !sourceHeight) {
+    return;
+  }
+
+  const projectedQuad = getProjectedSpriteQuad(sprite);
+
+  if (!projectedQuad) {
+    return;
+  }
+
+  const [topLeft, topRight, bottomRight, bottomLeft] = projectedQuad;
 
   const strips = Math.max(
     64,
@@ -1459,10 +1654,116 @@ function drawProjectedSprite(sprite) {
   }
 
   context.restore();
+
+  return projectedQuad;
+}
+
+function getCanvasPointerPosition(event) {
+  const bounds = canvas.getBoundingClientRect();
+
+  return {
+    x: event.clientX - bounds.left,
+    y: event.clientY - bounds.top
+  };
+}
+
+function isPointInPolygon(point, polygon) {
+  let isInside = false;
+
+  for (let currentIndex = 0, previousIndex = polygon.length - 1; currentIndex < polygon.length; previousIndex = currentIndex, currentIndex += 1) {
+    const current = polygon[currentIndex];
+    const previous = polygon[previousIndex];
+    const intersects = ((current.y > point.y) !== (previous.y > point.y))
+      && (point.x < ((previous.x - current.x) * (point.y - current.y)) / ((previous.y - current.y) || Number.EPSILON) + current.x);
+
+    if (intersects) {
+      isInside = !isInside;
+    }
+  }
+
+  return isInside;
+}
+
+function getBarycentricWeights(point, a, b, c) {
+  const denominator = ((b.y - c.y) * (a.x - c.x)) + ((c.x - b.x) * (a.y - c.y));
+
+  if (Math.abs(denominator) < Number.EPSILON) {
+    return null;
+  }
+
+  const weightA = (((b.y - c.y) * (point.x - c.x)) + ((c.x - b.x) * (point.y - c.y))) / denominator;
+  const weightB = (((c.y - a.y) * (point.x - c.x)) + ((a.x - c.x) * (point.y - c.y))) / denominator;
+  const weightC = 1 - weightA - weightB;
+
+  return { weightA, weightB, weightC };
+}
+
+function getTexturePointInQuad(point, quad, sourceWidth, sourceHeight) {
+  const triangles = [
+    {
+      points: [quad[0], quad[1], quad[2]],
+      uv: [{ u: 0, v: 0 }, { u: 1, v: 0 }, { u: 1, v: 1 }]
+    },
+    {
+      points: [quad[0], quad[2], quad[3]],
+      uv: [{ u: 0, v: 0 }, { u: 1, v: 1 }, { u: 0, v: 1 }]
+    }
+  ];
+
+  for (const triangle of triangles) {
+    const weights = getBarycentricWeights(point, triangle.points[0], triangle.points[1], triangle.points[2]);
+
+    if (!weights) {
+      continue;
+    }
+
+    const epsilon = -0.001;
+
+    if (weights.weightA >= epsilon && weights.weightB >= epsilon && weights.weightC >= epsilon) {
+      const u = (weights.weightA * triangle.uv[0].u) + (weights.weightB * triangle.uv[1].u) + (weights.weightC * triangle.uv[2].u);
+      const v = (weights.weightA * triangle.uv[0].v) + (weights.weightB * triangle.uv[1].v) + (weights.weightC * triangle.uv[2].v);
+
+      return {
+        x: u * sourceWidth,
+        y: v * sourceHeight
+      };
+    }
+  }
+
+  return null;
+}
+
+function getInteractiveRegionAtPoint(point) {
+  for (const region of state.interactiveRegions) {
+    if (!isPointInPolygon(point, region.points)) {
+      continue;
+    }
+
+    if (!region.hotspot) {
+      return region;
+    }
+
+    const texturePoint = getTexturePointInQuad(point, region.points, region.sourceWidth, region.sourceHeight);
+
+    if (!texturePoint) {
+      continue;
+    }
+
+    const { hotspot } = region;
+    const withinHotspotX = texturePoint.x >= hotspot.x && texturePoint.x <= hotspot.x + hotspot.width;
+    const withinHotspotY = texturePoint.y >= hotspot.y && texturePoint.y <= hotspot.y + hotspot.height;
+
+    if (withinHotspotX && withinHotspotY) {
+      return region;
+    }
+  }
+
+  return null;
 }
 
 function render() {
   context.clearRect(0, 0, state.width, state.height);
+  state.interactiveRegions = [];
 
   const background = context.createLinearGradient(0, 0, 0, state.height);
   background.addColorStop(0, "#e8dccb");
@@ -1547,7 +1848,18 @@ function render() {
   projectedSprites.sort((left, right) => right.depth - left.depth);
 
   for (const entry of projectedSprites) {
-    drawProjectedSprite(entry.sprite);
+    const projectedQuad = drawProjectedSprite(entry.sprite);
+
+    if (projectedQuad && entry.sprite.interactive) {
+      const source = entry.sprite.image;
+      state.interactiveRegions.push({
+        hotspot: entry.sprite.interactive.hotspot || null,
+        points: projectedQuad,
+        sourceHeight: source.naturalHeight || source.videoHeight || source.height,
+        sourceWidth: source.naturalWidth || source.videoWidth || source.width,
+        url: entry.sprite.interactive.url
+      });
+    }
   }
 
   const vignette = context.createRadialGradient(
@@ -1565,15 +1877,7 @@ function render() {
 }
 
 function updateHud() {
-  movementStatus.textContent =
-    `Position ${player.position.x.toFixed(1)}m, ${player.eyeHeight.toFixed(1)}m, ${player.position.z.toFixed(1)}m`;
-
-  if (document.pointerLockElement === canvas) {
-    lockStatus.textContent = "Mouse locked. Arrow keys move, mouse looks, Esc releases.";
-    return;
-  }
-
-  lockStatus.textContent = "Click Enter Gallery to capture the mouse.";
+  lockStatus.textContent = "Press Escape to leave";
 }
 
 function frame(now) {
@@ -1587,6 +1891,14 @@ function frame(now) {
 
 function requestLock() {
   canvas.requestPointerLock();
+}
+
+function openInteractiveRegion(region) {
+  if (!region?.url) {
+    return;
+  }
+
+  window.open(region.url, "_blank", "noopener");
 }
 
 function handleKeyChange(event, isPressed) {
@@ -1627,6 +1939,10 @@ document.addEventListener("pointerlockchange", () => {
 
 document.addEventListener("mousemove", (event) => {
   if (document.pointerLockElement !== canvas) {
+    const region = getInteractiveRegionAtPoint(getCanvasPointerPosition(event));
+    canvas.style.cursor = region
+      ? 'url("customCursor/p1-medium.cur"), pointer'
+      : 'url("customCursor/p3-medium.cur"), auto';
     return;
   }
 
@@ -1635,7 +1951,29 @@ document.addEventListener("mousemove", (event) => {
   player.pitch = clamp(player.pitch, -1.25, 1.25);
 });
 
-canvas.addEventListener("click", requestLock);
+canvas.addEventListener("click", (event) => {
+  if (document.pointerLockElement === canvas) {
+    const region = getInteractiveRegionAtPoint({
+      x: state.width / 2,
+      y: state.height / 2
+    });
+
+    if (region) {
+      openInteractiveRegion(region);
+    }
+
+    return;
+  }
+
+  const region = getInteractiveRegionAtPoint(getCanvasPointerPosition(event));
+
+  if (region) {
+    openInteractiveRegion(region);
+    return;
+  }
+
+  requestLock();
+});
 lockButton.addEventListener("click", requestLock);
 
 resizeCanvas();

@@ -3,8 +3,25 @@ const SCENE_HEIGHT = 1116;
 const INITIAL_HEAD_DELAY_MS = 1000;
 const OPENING_ANIMATION_MS = 2000;
 const OPENING_HOLD_MS = 1000;
-const PROJECTOR_STATUS_WORDS = ["Work in", "Progress"];
-const PROJECTOR_STATUS_INTERVAL_MS = 1000;
+const PROJECTOR_STATUS_TERMS = [
+  "AI",
+  "Design",
+  "Systems Thinking",
+  "Python",
+  "Data Science",
+  "Human Computer Interaction",
+  "Innovation",
+  "Technology",
+  "Music",
+  "Urbanism",
+  "Ethics",
+  "Sustainability",
+  "Interdisciplinary Collaboration",
+  "Problem Solving",
+  "Research",
+];
+const PROJECTOR_STATUS_SEPARATOR = "  ][  ";
+const PROJECTOR_STATUS_SCROLL_SPEED_PX_PER_SECOND = 112;
 const FLICKER_STEPS = [
   [0, 1, 0.85],
   [70, 0.28, 0.88],
@@ -40,20 +57,46 @@ function updateSceneScale() {
   document.documentElement.style.setProperty("--scene-scale", String(nextScale));
 }
 
-function startProjectorStatusCycle() {
-  const statusNode = document.querySelector(".screen-status-text");
+function shuffleProjectorStatusTerms() {
+  const shuffledTerms = [...PROJECTOR_STATUS_TERMS];
 
-  if (!statusNode) {
+  for (let index = shuffledTerms.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffledTerms[index], shuffledTerms[swapIndex]] = [shuffledTerms[swapIndex], shuffledTerms[index]];
+  }
+
+  return shuffledTerms;
+}
+
+function applyProjectorStatusTicker(trackNode, textNodes) {
+  const tickerText = `${shuffleProjectorStatusTerms().join(PROJECTOR_STATUS_SEPARATOR)}${PROJECTOR_STATUS_SEPARATOR}`;
+
+  for (const node of textNodes) {
+    node.textContent = tickerText;
+  }
+
+  window.requestAnimationFrame(() => {
+    const scrollWidth = Math.ceil(textNodes[0].getBoundingClientRect().width);
+    const duration = Math.max(scrollWidth / PROJECTOR_STATUS_SCROLL_SPEED_PX_PER_SECOND, 18);
+    trackNode.style.setProperty("--status-scroll-width", `${scrollWidth}px`);
+    trackNode.style.animationDuration = `${duration}s`;
+  });
+}
+
+function startProjectorStatusCycle() {
+  const trackNode = document.querySelector(".screen-status-track");
+
+  if (!trackNode) {
     return;
   }
 
-  let currentIndex = 0;
-  statusNode.textContent = PROJECTOR_STATUS_WORDS[currentIndex];
+  const textNodes = [...trackNode.querySelectorAll(".screen-status-text")];
 
-  window.setInterval(() => {
-    currentIndex = (currentIndex + 1) % PROJECTOR_STATUS_WORDS.length;
-    statusNode.textContent = PROJECTOR_STATUS_WORDS[currentIndex];
-  }, PROJECTOR_STATUS_INTERVAL_MS);
+  if (textNodes.length < 2) {
+    return;
+  }
+
+  applyProjectorStatusTicker(trackNode, textNodes);
 }
 
 function triggerBeamFlicker(node) {

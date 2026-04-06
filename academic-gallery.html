@@ -4,10 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Academic Gallery</title>
-  <link rel="stylesheet" href="academic-gallery.css">
+  <link rel="stylesheet" href="academic-gallery.css?v=20260406c">
 </head>
 <body>
   <main class="gallery-app">
+    <a class="home-link" href="index.html" aria-label="Back Home"></a>
+
     <canvas
       id="gallery-canvas"
       class="gallery-canvas"
@@ -16,22 +18,23 @@
 
     <div class="gallery-overlay">
       <section class="gallery-panel gallery-intro" aria-label="Gallery controls">
-        <p class="gallery-kicker">Academic Gallery</p>
-        <h1>Movement Prototype</h1>
-        <p class="gallery-copy">
-          You are standing inside a museum room interior from a first-person viewpoint
-          at 3 meters tall. Click to lock the cursor, use the mouse to look around,
-          and move with the arrow keys through the gallery.
-        </p>
+        <h1>Welcome to the Academic Gallery.</h1>
+        <div class="gallery-copy" aria-label="Gallery introduction and controls">
+          <p>You are standing in a 3d museum room</p>
+          <p>Move around to have a look at some of my recent projects</p>
+          <p class="gallery-copy-spacer" aria-hidden="true"></p>
+          <p class="gallery-controls-heading">Controls</p>
+          <p>Move: [w/a/s/d] or [up/down/left/right] arrows</p>
+          <p>Look Around: Mouse / Touchpad</p>
+          <p>Leave: [Esc] Escape Key</p>
+        </div>
         <div class="gallery-actions">
           <button id="lock-button" class="gallery-button" type="button">Enter Gallery</button>
-          <a class="gallery-link" href="index.html">Back Home</a>
         </div>
       </section>
 
-      <section class="gallery-panel gallery-status" aria-label="Player state">
-        <p id="movement-status">Position 0.0m, 2.0m, 0.0m</p>
-        <p id="lock-status">Click Enter Gallery to capture the mouse.</p>
+      <section class="gallery-panel gallery-status" aria-label="Exit hint">
+        <p id="lock-status">Press Escape to leave</p>
       </section>
     </div>
 
@@ -39,6 +42,6 @@
   </main>
 
   <script src="bench-model-data.js?v=20260327a"></script>
-  <script src="academic-gallery.js?v=20260327h"></script>
+  <script src="academic-gallery.js?v=20260406e"></script>
 </body>
 </html>

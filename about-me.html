@@ -4,12 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About Me</title>
-  <link rel="stylesheet" href="about-me.css?v=20260405c">
+  <link rel="stylesheet" href="about-me.css?v=20260406e">
   <script src="about-me.js" defer></script>
 </head>
 <body>
   <main class="about-page">
-    <a class="home-link" href="index.html">Back Home</a>
+    <a class="home-link" href="index.html" aria-label="Back Home"></a>
+
+    <section class="secret-note" aria-label="Hidden message">
+      <div class="secret-note-card">
+        <figure class="secret-note-symbol">
+          <img src="symbolo.png" alt="Secret symbol">
+        </figure>
+        <div class="secret-note-copy">
+          <div class="secret-note-lead" aria-label="You have found">
+            <span>You have</span>
+            <span class="secret-note-found-line">
+              <span class="secret-note-found">found</span>
+              <span class="secret-note-ellipsis" aria-hidden="true">...</span>
+            </span>
+          </div>
+          <p>The Secret</p>
+        </div>
+      </div>
+    </section>
 
     <div class="terminal-scale-frame">
       <article class="terminal-window" aria-labelledby="about-name">
