@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Personal Projects</title>
-  <link rel="stylesheet" href="personal-projects.css?v=20260406a">
+  <link rel="stylesheet" href="personal-projects.css?v=20260406h">
 </head>
 <body>
   <main class="projects-app">
@@ -30,28 +30,76 @@
           <div class="cabin-backdrop">
             <div class="cabin-content">
               <section class="floor-panel-content" id="floor-1-panel" data-floor="1" hidden>
-                <div class="placeholder-sheet">
-                  <span class="sheet-label">Floor 1</span>
-                  <div class="sheet-frame">
-                    <p>Project content placeholder</p>
+                <div class="placeholder-sheet placeholder-sheet--spotify">
+                  <span class="sheet-label sheet-label--spotify">Audio</span>
+                  <div class="sheet-frame sheet-frame--spotify">
+                    <iframe
+                      class="spotify-embed"
+                      data-testid="embed-iframe"
+                      style="border-radius:12px"
+                      src="https://open.spotify.com/embed/artist/0QPdbVSFYJxlXJyLssumgh?utm_source=generator&theme=0"
+                      width="100%"
+                      height="352"
+                      frameborder="0"
+                      allowfullscreen
+                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                      loading="lazy"
+                    ></iframe>
                   </div>
                 </div>
               </section>
 
               <section class="floor-panel-content" id="floor-2-panel" data-floor="2" hidden>
-                <div class="placeholder-sheet">
-                  <span class="sheet-label">Floor 2</span>
-                  <div class="sheet-frame">
-                    <p>Project content placeholder</p>
+                <div class="placeholder-sheet placeholder-sheet--spotify placeholder-sheet--visuals">
+                  <span class="sheet-label sheet-label--spotify">Visual</span>
+                  <div class="sheet-frame sheet-frame--spotify sheet-frame--visuals">
+                    <div class="visual-grid" aria-label="Visual project gallery">
+                      <figure class="visual-tile">
+                        <img src="personalProjects/Visual/jupiterfinal.png" alt="Final Jupiter artwork">
+                      </figure>
+                      <figure class="visual-tile">
+                        <img src="personalProjects/Visual/eenieMeenie.png" alt="Eenie Meenie artwork">
+                      </figure>
+                      <figure class="visual-tile visual-tile--wide">
+                        <img src="personalProjects/Visual/papers1.png" alt="Paper collage artwork">
+                      </figure>
+                      <figure class="visual-tile">
+                        <img src="personalProjects/Visual/gorillaRepellentArt.png" alt="Gorilla Repellent artwork">
+                      </figure>
+                      <figure class="visual-tile">
+                        <img src="personalProjects/Visual/jup2.png" alt="Jupiter artwork variation">
+                      </figure>
+                      <figure class="visual-tile">
+                        <img src="personalProjects/Visual/actionManArt.png" alt="Action Man artwork">
+                      </figure>
+                    </div>
                   </div>
                 </div>
               </section>
 
               <section class="floor-panel-content" id="floor-3-panel" data-floor="3" hidden>
-                <div class="placeholder-sheet">
-                  <span class="sheet-label">Floor 3</span>
-                  <div class="sheet-frame">
-                    <p>Project content placeholder</p>
+                <div class="placeholder-sheet placeholder-sheet--spotify placeholder-sheet--three-d">
+                  <span class="sheet-label sheet-label--spotify">3D</span>
+                  <div class="sheet-frame sheet-frame--spotify sheet-frame--three-d">
+                    <div class="three-d-gallery" aria-label="3D project gallery">
+                      <figure class="three-d-tile">
+                        <img
+                          class="three-d-media"
+                          src="personalProjects/3D/midscheepsGroundFloor.png"
+                          alt="Midscheeps ground floor 3D render"
+                        >
+                      </figure>
+                      <figure class="three-d-tile three-d-tile--video">
+                        <video
+                          class="three-d-media"
+                          src="personalProjects/3D/FINALDELFTGOLD.mov"
+                          autoplay
+                          muted
+                          loop
+                          playsinline
+                        ></video>
+                      </figure>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -64,7 +112,6 @@
       </section>
     </section>
 
-    <p class="stage-status" id="elevator-status">Select a floor to open the elevator.</p>
   </main>
 
   <script src="personal-projects.js?v=20260327a"></script>

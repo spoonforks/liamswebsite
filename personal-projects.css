@@ -7,7 +7,9 @@
   --door-duration: 850ms;
   --door-ease: cubic-bezier(0.6, 0, 0.2, 1);
   --indicator: #f6a623;
-  --stage-vertical-margin: 3cm;
+  --stage-vertical-margin: clamp(1.25rem, 3vh, 1.75rem);
+  --control-panel-width: 112px;
+  --elevator-shell-width: min(60rem, calc((100vh - (var(--stage-vertical-margin) * 2) - 1.25rem) * 1.14));
 }
 
 * {
@@ -85,19 +87,16 @@ body {
 }
 
 .projects-stage {
-  width: min(82vw, 720px);
+  position: relative;
+  width: 100%;
   height: 100%;
   display: grid;
-  grid-template-columns: minmax(84px, 112px) minmax(0, 1fr);
-  justify-content: center;
-  align-items: center;
-  gap: clamp(1rem, 2.5vw, 2rem);
+  place-items: center;
 }
 
 .control-panel {
-  width: min(100%, 112px);
+  width: min(100%, var(--control-panel-width));
   min-width: 84px;
-  justify-self: center;
   padding: clamp(0.9rem, 1.2vw, 1.15rem) 0.55rem;
   display: grid;
   gap: clamp(0.75rem, 1vw, 0.95rem);
@@ -144,7 +143,6 @@ body {
 
 .elevator-shell {
   position: relative;
-  width: min(100%, 500px);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0) 16%, rgba(0, 0, 0, 0.12) 100%),
     linear-gradient(90deg, var(--steel-edge) 0%, var(--steel-light) 6%, var(--steel-mid) 19%, var(--steel-light) 50%, var(--steel-mid) 81%, var(--steel-light) 94%, var(--steel-edge) 100%);
@@ -230,6 +228,16 @@ body {
   color: #111;
 }
 
+.placeholder-sheet--spotify {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  align-content: start;
+  row-gap: clamp(0.35rem, 0.8vw, 0.65rem);
+  padding: clamp(0.45rem, 1vw, 0.85rem) clamp(0.75rem, 1.6vw, 1.1rem) clamp(0.65rem, 1vw, 0.9rem);
+  background: #48484d;
+  color: #f2f2f2;
+}
+
 .sheet-label {
   display: inline-flex;
   align-items: center;
@@ -254,12 +262,172 @@ body {
     linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(250, 250, 250, 0.92));
 }
 
+.sheet-frame--spotify {
+  height: auto;
+  min-height: 0;
+  margin-top: 0;
+  padding: clamp(0.2rem, 0.55vw, 0.4rem);
+  border: 0;
+  background: transparent;
+}
+
+.sheet-label--spotify {
+  justify-self: center;
+  padding: 0;
+  background: transparent;
+  color: #f7f7f7;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.placeholder-sheet--three-d .sheet-label--spotify {
+  letter-spacing: 0;
+}
+
 .sheet-frame p {
   margin: 0;
   font-size: clamp(0.9rem, 1.5vw, 1.05rem);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: rgba(0, 0, 0, 0.34);
+}
+
+.spotify-embed {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.placeholder-sheet--visuals {
+  row-gap: clamp(0.4rem, 0.85vw, 0.7rem);
+}
+
+.sheet-frame--visuals {
+  align-items: stretch;
+  padding: clamp(0.2rem, 0.45vw, 0.35rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+
+.visual-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.55rem, 0.9vw, 0.8rem);
+  width: 100%;
+  align-content: start;
+}
+
+.visual-tile {
+  margin: 0;
+  overflow: hidden;
+  border-radius: 0.9rem;
+  background: rgba(20, 20, 22, 0.5);
+  box-shadow:
+    0 10px 18px rgba(0, 0, 0, 0.18),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.visual-tile img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.visual-tile--wide {
+  grid-column: 1 / -1;
+}
+
+.visual-tile--wide img {
+  aspect-ratio: 16 / 8.2;
+}
+
+.sheet-frame--visuals::-webkit-scrollbar {
+  width: 0.7rem;
+}
+
+.sheet-frame--visuals::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+}
+
+.sheet-frame--visuals::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+}
+
+.sheet-frame--visuals::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.34);
+}
+
+.placeholder-sheet--three-d {
+  row-gap: clamp(0.45rem, 0.85vw, 0.75rem);
+}
+
+.sheet-frame--three-d {
+  align-items: stretch;
+  padding: clamp(0.25rem, 0.55vw, 0.4rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+
+.three-d-gallery {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(0.65rem, 1vw, 0.9rem);
+  width: 100%;
+  align-content: start;
+}
+
+.three-d-tile {
+  margin: 0;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: rgba(20, 20, 22, 0.45);
+  box-shadow:
+    0 10px 18px rgba(0, 0, 0, 0.18),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.three-d-media {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: auto;
+  object-fit: contain;
+  background: rgba(10, 10, 12, 0.16);
+}
+
+.three-d-tile:first-child .three-d-media {
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  background: transparent;
+}
+
+.three-d-tile--video .three-d-media {
+  max-height: clamp(17rem, 42vh, 24rem);
+}
+
+.sheet-frame--three-d::-webkit-scrollbar {
+  width: 0.7rem;
+}
+
+.sheet-frame--three-d::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+}
+
+.sheet-frame--three-d::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+}
+
+.sheet-frame--three-d::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.34);
 }
 
 .elevator-door {
@@ -319,13 +487,19 @@ body {
   transform: translateX(104%);
 }
 
-.stage-status {
-  margin: 1rem 0 0;
-  text-align: center;
-  font-size: 0.84rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.62);
+@media (min-width: 861px) {
+  .control-panel {
+    position: absolute;
+    top: 50%;
+    left: max(1.25rem, calc(((100vw - var(--elevator-shell-width)) / 4) - (var(--control-panel-width) / 2)));
+    transform: translateY(-50%);
+  }
+
+  .elevator-shell {
+    width: min(100%, var(--elevator-shell-width));
+    aspect-ratio: 1.14 / 1;
+    justify-self: center;
+  }
 }
 
 .sr-only {
@@ -365,6 +539,10 @@ body {
   }
 
   .control-panel {
+    position: static;
+    top: auto;
+    left: auto;
+    transform: none;
     width: min(100%, 340px);
     grid-auto-flow: column;
     grid-auto-columns: 1fr;
@@ -373,6 +551,7 @@ body {
 
   .elevator-shell {
     width: 100%;
+    aspect-ratio: auto;
   }
 }
 

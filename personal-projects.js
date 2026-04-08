@@ -21,6 +21,12 @@ function setIndicator(value) {
   indicatorValue.textContent = value ?? "--";
 }
 
+function setStatus(message) {
+  if (statusLabel) {
+    statusLabel.textContent = message;
+  }
+}
+
 function setSelectedButton(floor) {
   floorButtons.forEach((button) => {
     const isSelected = button.dataset.floor === String(floor);
@@ -53,9 +59,9 @@ async function runElevatorCycle(floor) {
   setSelectedButton(floor);
   setIndicator(floor);
   elevatorShell.classList.add("is-moving");
-  statusLabel.textContent = startingFromOpen
+  setStatus(startingFromOpen
     ? `Traveling to floor ${floor}.`
-    : `Calling floor ${floor}.`;
+    : `Calling floor ${floor}.`);
 
   if (startingFromOpen) {
     elevatorShell.classList.remove("is-open");
@@ -66,7 +72,7 @@ async function runElevatorCycle(floor) {
 
   showFloorPanel(floor);
   elevatorShell.classList.add("is-open");
-  statusLabel.textContent = `Floor ${floor} open.`;
+  setStatus(`Floor ${floor} open.`);
 
   await wait(DOOR_DURATION_MS);
 
@@ -103,7 +109,7 @@ if (initialFloor === "1" || initialFloor === "2" || initialFloor === "3") {
     showFloorPanel(initialFloor);
     setSelectedButton(initialFloor);
     setIndicator(initialFloor);
-    statusLabel.textContent = `Floor ${initialFloor} open.`;
+    setStatus(`Floor ${initialFloor} open.`);
     elevatorShell.classList.add("is-open");
     currentFloor = initialFloor;
   } else {
