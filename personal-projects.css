@@ -197,7 +197,7 @@ body {
 .elevator-frame {
   position: relative;
   aspect-ratio: 1.23 / 1;
-  margin: 0 clamp(0.7rem, 1vw, 0.9rem) clamp(0.7rem, 1vw, 0.9rem);
+  margin: clamp(0.7rem, 1vw, 0.9rem);
   overflow: hidden;
   background:
     linear-gradient(90deg, rgba(0, 0, 0, 0.28), rgba(255, 255, 255, 0.05) 2%, rgba(255, 255, 255, 0.05) 98%, rgba(0, 0, 0, 0.34)),
@@ -216,7 +216,7 @@ body {
   position: absolute;
   inset: clamp(0.8rem, 1.4vw, 1rem);
   background: #fff;
-  border: clamp(5px, 0.7vw, 8px) solid rgba(126, 126, 126, 0.9);
+  border: clamp(5px, 0.7vw, 8px) solid #48484d;
   box-shadow: inset 0 0 26px rgba(0, 0, 0, 0.08);
 }
 

@@ -3,6 +3,7 @@ const SCENE_HEIGHT = 1116;
 const INITIAL_HEAD_DELAY_MS = 1000;
 const OPENING_ANIMATION_MS = 2000;
 const OPENING_HOLD_MS = 1000;
+const RETURN_ANIMATION_SPEED_MULTIPLIER = 2;
 const PROJECTOR_STATUS_TERMS = [
   "AI",
   "Design",
@@ -32,6 +33,19 @@ const FLICKER_STEPS = [
   [450, 0.22, 0.91],
   [580, 1, 1],
 ];
+const urlParams = new URLSearchParams(window.location.search);
+const animationSpeedMultiplier = urlParams.get("return") === "1" ? RETURN_ANIMATION_SPEED_MULTIPLIER : 1;
+
+if (urlParams.get("return") === "1") {
+  urlParams.delete("return");
+  const nextQuery = urlParams.toString();
+  const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ""}${window.location.hash}`;
+  window.history.replaceState({}, "", nextUrl);
+}
+
+function scaleDuration(durationMs) {
+  return durationMs / animationSpeedMultiplier;
+}
 
 function preloadImage(src) {
   return new Promise((resolve) => {
@@ -112,7 +126,7 @@ function triggerBeamFlicker(node) {
   for (const [delay, opacity] of FLICKER_STEPS) {
     window.setTimeout(() => {
       node.style.opacity = String(opacity);
-    }, delay);
+    }, scaleDuration(delay));
   }
 }
 
@@ -122,7 +136,7 @@ function triggerProjectorContentFlicker(node) {
   for (const [delay, , opacity] of FLICKER_STEPS) {
     window.setTimeout(() => {
       node.style.opacity = String(opacity);
-    }, delay);
+    }, scaleDuration(delay));
   }
 }
 
@@ -189,9 +203,9 @@ window.addEventListener("load", async () => {
         finalHead.classList.add("is-active");
         triggerBeamFlicker(eyeBeams);
         triggerProjectorContentFlicker(projectorContent);
-      }, OPENING_HOLD_MS);
-    }, OPENING_ANIMATION_MS);
-  }, INITIAL_HEAD_DELAY_MS);
+      }, scaleDuration(OPENING_HOLD_MS));
+    }, scaleDuration(OPENING_ANIMATION_MS));
+  }, scaleDuration(INITIAL_HEAD_DELAY_MS));
 });
 
 window.addEventListener("resize", updateSceneScale);
