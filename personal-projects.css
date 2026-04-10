@@ -37,10 +37,7 @@ html,
 body {
   margin: 0;
   min-height: 100%;
-  background:
-    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.08), transparent 26%),
-    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.03), transparent 55%),
-    var(--bg);
+  background-color: #000;
 }
 
 body {
@@ -59,6 +56,21 @@ body {
   justify-items: center;
   gap: 1rem;
   overflow: hidden;
+  isolation: isolate;
+  background-color: #000;
+}
+
+.projects-app::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("homeAnimation/backgroundTile.png");
+  background-position: top left;
+  background-repeat: repeat;
+  background-size: 108px 108px;
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .home-link {

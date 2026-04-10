@@ -135,9 +135,9 @@ body {
   top: auto;
   right: clamp(0.8rem, 1.6vw, 1.3rem);
   bottom: clamp(3.2rem, 5.5vw, 4.8rem);
-  width: min(31rem, calc(100vw - 1.6rem));
+  width: min(16.6rem, calc(100vw - 1.6rem));
   max-height: none;
-  padding: 1rem 1.15rem 1rem;
+  padding: 0.9rem 0.85rem 1rem;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 1rem;
@@ -159,23 +159,25 @@ body {
 }
 
 .site-info-header {
-  display: grid;
-  grid-template-columns: 1.4rem minmax(0, 1fr);
+  position: relative;
+  min-height: 1.6rem;
+  padding-left: 1.45rem;
+  display: flex;
   align-items: center;
-  column-gap: 0.7rem;
+  justify-content: flex-end;
 }
 
 .site-info-panel h2 {
   font-family: Georgia, serif;
-  font-size: clamp(1.22rem, 2vw, 1.8rem);
+  font-size: clamp(0.94rem, 1.25vw, 1.22rem);
   font-weight: 400;
   line-height: 1.05;
   text-align: right;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .site-info-section {
-  margin-top: 0.7rem;
+  margin-top: 0.58rem;
   text-align: right;
 }
 
@@ -187,24 +189,27 @@ body {
 }
 
 .site-info-section p {
-  margin-top: 0.12rem;
+  margin-top: 0.08rem;
   font-family: "Courier New", monospace;
   font-size: 0.72rem;
-  line-height: 1.2;
+  line-height: 1.14;
 }
 
 .site-info-panel a {
   color: #fafafa;
-  text-decoration: none;
-  word-break: break-word;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+  text-decoration-thickness: 1px;
 }
 
 .site-info-panel a:hover {
-  text-decoration: underline;
+  color: #ffffff;
 }
 
 .site-info-close {
-  position: static;
+  position: absolute;
+  top: 50%;
+  left: 0;
   display: grid;
   place-items: center;
   width: 1.4rem;
@@ -216,6 +221,7 @@ body {
   font-family: Georgia, serif;
   font-size: 1.55rem;
   line-height: 1;
+  transform: translateY(-50%);
 }
 
 .stage {
