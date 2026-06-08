@@ -31,6 +31,25 @@ const THESIS_PLAQUE_BUTTON_BOUNDS = {
   width: 420,
   height: 148
 };
+const PARAMETRIC_PLAQUE_BUTTON_BOUNDS = {
+  x: 170,
+  y: 344,
+  width: 420,
+  height: 148
+};
+const PARAMETRIC_GIF_OVERLAY = {
+  x: 848,
+  y: 384,
+  width: 639,
+  height: 353
+};
+const PARAMETRIC_ANIMATION_SPRITES = {
+  frameWidth: 320,
+  frameHeight: 177,
+  frames: 225,
+  columns: 15,
+  fps: 8
+};
 const TREE_VIDEO_BUTTON_BOUNDS = {
   x: 242,
   y: 528,
@@ -45,19 +64,38 @@ const state = {
   width: window.innerWidth,
   height: window.innerHeight,
   focalLength: 1,
-  dpr: 1
+  dpr: 1,
+  hasEnteredGallery: false,
+  dragLookActive: false,
+  lastPointerX: 0,
+  lastPointerY: 0
 };
 
 const THESIS_PDF_URL = encodeURI("Academic Works/Thesis/liamThesis.pdf");
+const PARAMETRIC_PDF_URL = encodeURI("ParametricShading.pdf");
 const TREE_VIDEO_URL = "https://youtu.be/ox3WYoONv8k";
 const frameImage = new Image();
 frameImage.src = "goldframe.png";
 const thesisFrameImage = new Image();
 thesisFrameImage.src = "Academic Works/Thesis/thesisFrame.png";
-const parametricFrameImage = new Image();
-parametricFrameImage.src = "Academic Works/Parametric/parametric.png";
+const parametricLegacyFrameImage = new Image();
+parametricLegacyFrameImage.src = "Academic Works/Parametric/parametric.png";
+const parametricPosterImage = new Image();
+parametricPosterImage.src = "ParametricPosting.png";
+const parametricAnimationSheetImage = new Image();
+parametricAnimationSheetImage.src = "CanopyEvolution-spritesheet.png";
+const parametricFrameTexture = document.createElement("canvas");
+const parametricFrameTextureContext = parametricFrameTexture.getContext("2d");
+const parametricFrameState = {
+  hasDrawn: false,
+  lastBaseImage: null,
+  lastAnimationFrame: -1,
+  lastOverlayEnabled: false
+};
 const treeBiodiversityFrameImage = new Image();
 treeBiodiversityFrameImage.src = "Academic Works/TreeBiodiversity/treeBiodiversity.png";
+const comingSoonFrameImage = new Image();
+comingSoonFrameImage.src = "comingsoon.png";
 const thesisTitleImage = new Image();
 thesisTitleImage.src = "Academic Works/Thesis/thesisFrame-title.jpg";
 const thesisPipelineImage = new Image();
@@ -128,8 +166,7 @@ function buildScene() {
       width: 9.6,
       height: 6.4,
       content: {
-        type: "text",
-        text: "Coming soon"
+        type: "comingSoon"
       }
     }
   ];
@@ -171,11 +208,15 @@ function createFrameContentTexture(config) {
   }
 
   if (config.type === "parametric") {
-    return parametricFrameImage;
+    return parametricFrameTexture;
   }
 
   if (config.type === "treeBiodiversity") {
     return treeBiodiversityFrameImage;
+  }
+
+  if (config.type === "comingSoon") {
+    return comingSoonFrameImage;
   }
 
   if (config.type !== "text") {
@@ -266,6 +307,78 @@ function createThesisTexture() {
   }
 
   return texture;
+}
+
+function getParametricBaseImage() {
+  if (parametricPosterImage.complete && parametricPosterImage.naturalWidth) {
+    return parametricPosterImage;
+  }
+
+  if (parametricLegacyFrameImage.complete && parametricLegacyFrameImage.naturalWidth) {
+    return parametricLegacyFrameImage;
+  }
+
+  return null;
+}
+
+function updateParametricFrameTexture(now = performance.now()) {
+  const baseImage = getParametricBaseImage();
+
+  if (!baseImage) {
+    return;
+  }
+
+  const overlayEnabled = (
+    baseImage === parametricPosterImage
+    && parametricAnimationSheetImage.complete
+    && parametricAnimationSheetImage.naturalWidth
+    && parametricAnimationSheetImage.naturalHeight
+  );
+  const animationFrame = overlayEnabled
+    ? Math.floor(now / (1000 / PARAMETRIC_ANIMATION_SPRITES.fps)) % PARAMETRIC_ANIMATION_SPRITES.frames
+    : -1;
+
+  if (
+    parametricFrameState.hasDrawn
+    && parametricFrameState.lastBaseImage === baseImage
+    && parametricFrameState.lastOverlayEnabled === overlayEnabled
+    && (!overlayEnabled || parametricFrameState.lastAnimationFrame === animationFrame)
+  ) {
+    return;
+  }
+
+  const baseWidth = baseImage.naturalWidth;
+  const baseHeight = baseImage.naturalHeight;
+
+  if (parametricFrameTexture.width !== baseWidth || parametricFrameTexture.height !== baseHeight) {
+    parametricFrameTexture.width = baseWidth;
+    parametricFrameTexture.height = baseHeight;
+  }
+
+  parametricFrameTextureContext.clearRect(0, 0, baseWidth, baseHeight);
+  parametricFrameTextureContext.drawImage(baseImage, 0, 0, baseWidth, baseHeight);
+
+  if (overlayEnabled) {
+    const sourceX = (animationFrame % PARAMETRIC_ANIMATION_SPRITES.columns) * PARAMETRIC_ANIMATION_SPRITES.frameWidth;
+    const sourceY = Math.floor(animationFrame / PARAMETRIC_ANIMATION_SPRITES.columns) * PARAMETRIC_ANIMATION_SPRITES.frameHeight;
+
+    parametricFrameTextureContext.drawImage(
+      parametricAnimationSheetImage,
+      sourceX,
+      sourceY,
+      PARAMETRIC_ANIMATION_SPRITES.frameWidth,
+      PARAMETRIC_ANIMATION_SPRITES.frameHeight,
+      PARAMETRIC_GIF_OVERLAY.x,
+      PARAMETRIC_GIF_OVERLAY.y,
+      PARAMETRIC_GIF_OVERLAY.width,
+      PARAMETRIC_GIF_OVERLAY.height
+    );
+  }
+
+  parametricFrameState.hasDrawn = true;
+  parametricFrameState.lastBaseImage = baseImage;
+  parametricFrameState.lastOverlayEnabled = overlayEnabled;
+  parametricFrameState.lastAnimationFrame = animationFrame;
 }
 
 function drawThesisTitle(textureContext) {
@@ -1083,8 +1196,12 @@ function addFramedArtwork(collection, lineCollection, spriteCollection, config) 
   if (config.content?.type === "parametric") {
     addSprite(spriteCollection, {
       image: parametricPlaqueTexture,
-      points: getWallQuad(config.wall, 6.2, 2.32, 2.2, 1.85, frameDepth + 0.002),
-      depthBias: -2.6
+      points: getWallQuad(config.wall, 6.2, 2.16, 2.2, 2.08, frameDepth + 0.002),
+      depthBias: -2.6,
+      interactive: {
+        hotspot: PARAMETRIC_PLAQUE_BUTTON_BOUNDS,
+        url: PARAMETRIC_PDF_URL
+      }
     });
   }
 
@@ -1146,9 +1263,13 @@ function createThesisPlaqueTexture() {
 function createParametricPlaqueTexture() {
   const texture = document.createElement("canvas");
   texture.width = 760;
-  texture.height = 620;
+  texture.height = 700;
   const textureContext = texture.getContext("2d");
   const inset = 28;
+  const buttonWidth = PARAMETRIC_PLAQUE_BUTTON_BOUNDS.width;
+  const buttonHeight = PARAMETRIC_PLAQUE_BUTTON_BOUNDS.height;
+  const buttonX = PARAMETRIC_PLAQUE_BUTTON_BOUNDS.x;
+  const buttonY = PARAMETRIC_PLAQUE_BUTTON_BOUNDS.y;
 
   textureContext.fillStyle = "#fdfcf9";
   textureContext.strokeStyle = "rgba(41, 36, 31, 0.18)";
@@ -1160,13 +1281,24 @@ function createParametricPlaqueTexture() {
   textureContext.fillStyle = "#131313";
   textureContext.textAlign = "center";
   textureContext.textBaseline = "middle";
-  textureContext.font = "700 76px Georgia, serif";
-  textureContext.fillText("Parametric", texture.width / 2, 238);
-  textureContext.fillText("Design", texture.width / 2, 332);
+  textureContext.font = "700 84px Georgia, serif";
+  textureContext.fillText("Parametric", texture.width / 2, 180);
+  textureContext.fillText("Design", texture.width / 2, 274);
 
-  textureContext.fillStyle = "rgba(19, 19, 19, 0.72)";
-  textureContext.font = "500 40px Aptos, 'Segoe UI', sans-serif";
-  textureContext.fillText("Work in progress", texture.width / 2, 462);
+  textureContext.fillStyle = "#ffffff";
+  textureContext.strokeStyle = "#111111";
+  textureContext.lineWidth = 8;
+  roundRect(textureContext, buttonX, buttonY, buttonWidth, buttonHeight, 40);
+  textureContext.fill();
+  textureContext.stroke();
+
+  textureContext.fillStyle = "#111111";
+  textureContext.font = "700 54px Aptos, 'Segoe UI', sans-serif";
+  textureContext.fillText("Presentation", texture.width / 2, buttonY + buttonHeight / 2 + 2);
+
+  textureContext.fillStyle = "rgba(19, 19, 19, 0.78)";
+  textureContext.font = "500 28px Aptos, 'Segoe UI', sans-serif";
+  textureContext.fillText("* you can click on this button *", texture.width / 2, 584);
 
   return texture;
 }
@@ -1762,6 +1894,7 @@ function getInteractiveRegionAtPoint(point) {
 }
 
 function render() {
+  updateParametricFrameTexture(performance.now());
   context.clearRect(0, 0, state.width, state.height);
   state.interactiveRegions = [];
 
@@ -1877,7 +2010,14 @@ function render() {
 }
 
 function updateHud() {
-  lockStatus.textContent = "Press Escape to leave";
+  if (!state.hasEnteredGallery) {
+    lockStatus.textContent = "Press Escape to leave";
+    return;
+  }
+
+  lockStatus.textContent = document.pointerLockElement === canvas
+    ? "Press Escape to leave"
+    : "Click and drag to look around. Use W/A/S/D or arrow keys to move.";
 }
 
 function frame(now) {
@@ -1889,8 +2029,33 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 
+function updateInteractionUi() {
+  const locked = document.pointerLockElement === canvas;
+  document.body.classList.toggle("is-locked", locked);
+  document.body.classList.toggle("is-gallery-active", state.hasEnteredGallery);
+  lockButton.textContent = locked
+    ? "Mouse Captured"
+    : state.hasEnteredGallery
+      ? "Click Canvas To Capture Mouse"
+      : "Enter Gallery";
+}
+
 function requestLock() {
-  canvas.requestPointerLock();
+  state.hasEnteredGallery = true;
+  canvas.focus({ preventScroll: true });
+  updateInteractionUi();
+
+  if (typeof canvas.requestPointerLock !== "function") {
+    return;
+  }
+
+  const maybePromise = canvas.requestPointerLock();
+
+  if (maybePromise && typeof maybePromise.catch === "function") {
+    maybePromise.catch(() => {
+      updateHud();
+    });
+  }
 }
 
 function openInteractiveRegion(region) {
@@ -1932,23 +2097,51 @@ window.addEventListener("keydown", (event) => handleKeyChange(event, true));
 window.addEventListener("keyup", (event) => handleKeyChange(event, false));
 
 document.addEventListener("pointerlockchange", () => {
-  const locked = document.pointerLockElement === canvas;
-  document.body.classList.toggle("is-locked", locked);
-  lockButton.textContent = locked ? "Mouse Captured" : "Enter Gallery";
+  updateInteractionUi();
+  updateHud();
 });
 
 document.addEventListener("mousemove", (event) => {
-  if (document.pointerLockElement !== canvas) {
+  if (document.pointerLockElement === canvas) {
+    player.yaw -= event.movementX * movement.lookSensitivity;
+    player.pitch += event.movementY * movement.lookSensitivity * 0.9;
+    player.pitch = clamp(player.pitch, -1.25, 1.25);
+    return;
+  }
+
+  if (state.dragLookActive) {
+    const deltaX = event.clientX - state.lastPointerX;
+    const deltaY = event.clientY - state.lastPointerY;
+    state.lastPointerX = event.clientX;
+    state.lastPointerY = event.clientY;
+    player.yaw -= deltaX * movement.lookSensitivity;
+    player.pitch += deltaY * movement.lookSensitivity * 0.9;
+    player.pitch = clamp(player.pitch, -1.25, 1.25);
+    return;
+  }
+
+  if (!state.hasEnteredGallery) {
     const region = getInteractiveRegionAtPoint(getCanvasPointerPosition(event));
     canvas.style.cursor = region
       ? 'url("customCursor/p1-medium.cur"), pointer'
       : 'url("customCursor/p3-medium.cur"), auto';
+  }
+});
+
+document.addEventListener("pointerlockerror", updateHud);
+
+canvas.addEventListener("mousedown", (event) => {
+  if (!state.hasEnteredGallery || document.pointerLockElement === canvas) {
     return;
   }
 
-  player.yaw -= event.movementX * movement.lookSensitivity;
-  player.pitch += event.movementY * movement.lookSensitivity * 0.9;
-  player.pitch = clamp(player.pitch, -1.25, 1.25);
+  state.dragLookActive = true;
+  state.lastPointerX = event.clientX;
+  state.lastPointerY = event.clientY;
+});
+
+window.addEventListener("mouseup", () => {
+  state.dragLookActive = false;
 });
 
 canvas.addEventListener("click", (event) => {
@@ -1962,6 +2155,11 @@ canvas.addEventListener("click", (event) => {
       openInteractiveRegion(region);
     }
 
+    return;
+  }
+
+  if (state.hasEnteredGallery) {
+    requestLock();
     return;
   }
 
@@ -1979,4 +2177,5 @@ lockButton.addEventListener("click", requestLock);
 resizeCanvas();
 render();
 updateHud();
+updateInteractionUi();
 requestAnimationFrame(frame);

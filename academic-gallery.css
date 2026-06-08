@@ -222,12 +222,14 @@ body.is-locked {
   cursor: none;
 }
 
+body.is-gallery-active .gallery-intro,
 body.is-locked .gallery-intro {
   opacity: 0;
   visibility: hidden;
   transform: translate(-50%, calc(-50% - 8px));
 }
 
+body.is-gallery-active .gallery-status,
 body.is-locked .gallery-status {
   opacity: 0.82;
 }
